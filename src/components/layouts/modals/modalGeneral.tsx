@@ -36,7 +36,7 @@ export default function ModalGeneral({ openModal, setOpenModal, id }: ModalGener
    setLoading(true);
    
    try {
-     const response = await fetch('/api/prospects', {
+     const response = await fetch('/api/prospects/stages', {
        method: 'POST',
        headers: { 'Content-Type': 'application/json' },
        body: JSON.stringify(formData)

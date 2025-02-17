@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 
-interface Funnel {
-  funnel_id: number;
-  name: string;
+interface Client {
+  client_id: number;
+  contact_name: string;
 }
 
-export default function AutoComplete({ onSelect }: { onSelect: (funnel: Funnel) => void }) {
+export default function AutoCompleteClient({ onSelect }: { onSelect: (client: Client) => void }) {
   const [query, setQuery] = useState("");
-  const [filteredItems, setFilteredItems] = useState<Funnel[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Client[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -23,12 +23,12 @@ export default function AutoComplete({ onSelect }: { onSelect: (funnel: Funnel) 
     }
   };
 
-  const handleSelect = (funnel: Funnel) => {
-    setQuery(funnel.name);
+  const handleSelect = (client: Client) => {
+    setQuery(client.contact_name);
     setFilteredItems([]);
 
     // Enviar los datos al componente padre
-    onSelect(funnel);
+    onSelect(client);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -43,8 +43,8 @@ export default function AutoComplete({ onSelect }: { onSelect: (funnel: Funnel) 
 
   const handleSearchFunnel = async (name: string) => {
     try {
-      const response = await fetch(`/api/search/${name}?table=funnel`);
-      const data: Funnel[] = await response.json();
+      const response = await fetch(`/api/search/${name}?table=client`);
+      const data: Client[] = await response.json();
 
       if (response.ok) {
         setFilteredItems(data);
@@ -61,20 +61,23 @@ export default function AutoComplete({ onSelect }: { onSelect: (funnel: Funnel) 
         value={query}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        placeholder="Buscar una campaña..."
-        className="w-full p-2 border-none bg-gray-100 rounded-xl"
+        placeholder="Buscar un cliente..."
+        className="w-full p-2 mt-2 border-gray-200 bg-white rounded"
       />
       {filteredItems.length > 0 && (
-        <ul className="absolute left-0 w-full bg-white border rounded-xl mt-1 shadow-lg z-10">
+        <ul className="absolute left-0 w-full bg-white border rounded mt-1 shadow-lg z-10">
           {filteredItems.map((item, index) => (
             <li
-              key={item.funnel_id}
+              key={item.client_id}
               className={`p-2 cursor-pointer ${
                 index === selectedIndex ? "bg-blue-500 text-white" : "bg-white"
               }`}
               onClick={() => handleSelect(item)}
             >
-              {item.name}
+             
+              <h1>{item.contact_name}</h1>
+              <p  className="text-gray-600 text-sm">{item.email}</p>
+          
             </li>
           ))}
         </ul>

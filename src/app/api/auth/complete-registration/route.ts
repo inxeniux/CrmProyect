@@ -9,6 +9,7 @@ export async function POST(request: Request) {
     const result = await RegistrationService.completeRegistration(registrationData);
     return NextResponse.json(result);
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: error.message },
       { status: 400 }

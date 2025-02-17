@@ -7,10 +7,43 @@ import { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
+interface PasswordFormData {
+  email: string;
+
+}
+
+interface FocusState {
+  email: boolean;
+
+}
+
+
+
 export default function SendCodePage() {
   const { theme, toggleTheme } = useTheme();
-  const [isFocused, setIsFocused] = useState({ email: false });
-  const [inputValues, setInputValues] = useState({ email: '' });
+
+    const [isFocused, setIsFocused] = useState<FocusState>({
+      email: false,
+    });
+  
+    const [inputValues, setInputValues] = useState<PasswordFormData>({
+      email: '',
+    });
+  
+    const handleFocus = (field: keyof FocusState): void => {
+      setIsFocused(prev => ({ ...prev, [field]: true }));
+    };
+  
+    const handleBlur = (field: keyof FocusState): void => {
+      setIsFocused(prev => ({ ...prev, [field]: false }));
+    };
+  
+    const handleChange = (field: keyof PasswordFormData, value: string): void => {
+      setInputValues(prev => ({ ...prev, [field]: value }));
+    };
+  
+
+
   const router = useRouter();
 
   const handleContinue = () => {
@@ -18,17 +51,7 @@ export default function SendCodePage() {
   };
 
 
-  const handleFocus = (field) => {
-    setIsFocused(prev => ({ ...prev, [field]: true }));
-  };
 
-  const handleBlur = (field) => {
-    setIsFocused(prev => ({ ...prev, [field]: false }));
-  };
-
-  const handleChange = (field, value) => {
-    setInputValues(prev => ({ ...prev, [field]: value }));
-  };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row relative">

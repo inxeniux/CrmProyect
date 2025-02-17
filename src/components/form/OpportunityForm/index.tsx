@@ -1,7 +1,8 @@
 // components/form/OpportunityForm/index.tsx
 'use client';
 
-import useSWR from 'swr';
+import AutoCompleteClient from '@/components/ui/inputs/AutocompleteClient';
+import { useEffect, useState } from 'react';
 
 interface FormProps {
  formData: {
@@ -15,16 +16,12 @@ interface FormProps {
  id: string;
 }
 
-interface Stage {
- stage_id: number;
- name: string;
-}
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function OpportunityForm({ formData, setFormData, id }: FormProps) {
- const { data, error, isLoading } = useSWR<Stage[]>(`/api/prospects/stages/${id}`, fetcher);
-
+ const [data,setData] = useState([]);
+ const [isLoading,setIsLoading] = useState(false);
+ const [error,setError] = useState('');
  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
   const { name, value } = e.target;
 
@@ -43,11 +40,41 @@ const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   }));
 };
 
+const fetchTask = async () => {
+  
+  try {
+    const response = await fetch(`/api/prospects/stages/${id}`);
+    const data = await response.json()
+    if (response.ok) {
+     setData(data)
+  
+    }
+  } catch (err) {
+    setIsLoading(false)
+    setError(err instanceof Error ? err.message : 'Error ocurrido')
+    console.error('Error:', err);
+  }
+};
+
+const handleFunnelSelect = (client: { name: string; client_id: number }) => {
+  setFormData((prevState)=>({
+    ...prevState,
+    client_id:client.client_id
+  }))
+
+
+};
+
+
+useEffect(()=>{
+ fetchTask();
+},[])
+
 
 
 
  if (isLoading) return <p>Cargando...</p>;
- if (error) return <p>Error: {error.message}</p>;
+ if (error) return <p>Error: {error}</p>;
  if (!data) return null;
 
  return (
@@ -56,16 +83,9 @@ const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
        <label htmlFor="client_id" className="block text-sm font-medium text-gray-700">
          Cliente
        </label>
-       <input
-         type="number"
-         id="client_id"
-         name="client_id"
-         value={formData.client_id}
-         onChange={handleChange}
-         placeholder="Ingresa el nombre"
-         required
-         className="w-full mt-2 p-2 border border-gray-300 rounded-md"
-       />
+        <AutoCompleteClient onSelect={handleFunnelSelect}/>
+           
+      
      </div>
 
      <div className="mb-4">
@@ -96,7 +116,10 @@ const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
          required
          className="w-full mt-2 p-2 border border-gray-300 rounded-md"
        >
-         {data.map((item) => (
+           <option  value={""}>
+             Selecciona una opcion
+           </option>
+         {data.length > 0 && data.map((item) => (
            <option key={item.stage_id} value={item.stage_id}>
              {item.name}
            </option>

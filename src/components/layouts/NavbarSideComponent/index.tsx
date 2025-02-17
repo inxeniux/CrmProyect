@@ -29,10 +29,14 @@ export default function NavbarSideComponent({
    const { theme } = useTheme();
    const router =  useRouter();
    const [openModalEmail,setOpenModalEmail] = useState(false);
-   const  handleLogout = () => {
-    localStorage.removeItem('auth_token')
-    router.push('/login')
-   }
+   const handleLogout = () => {
+    // Eliminar la cookie 'auth_token'
+    document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+  
+    // Redirigir al usuario a la página de login
+    router.push('/login');
+  };
+  
   return (
     <React.Fragment>
       <MassEmailModal onClose={setOpenModalEmail} isOpen={openModalEmail}/>

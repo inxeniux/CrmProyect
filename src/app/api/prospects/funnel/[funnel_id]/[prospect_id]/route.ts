@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(req: Request, { params }: { params: { funnel_id: string, prospect_id: string } }) {
+export async function GET(
+  req: Request, 
+  { params }: { params: { funnel_id: string; prospect_id: string } }
+): Promise<NextResponse> {
   const { funnel_id, prospect_id } = params;
 
   try {
@@ -11,7 +14,7 @@ export async function GET(req: Request, { params }: { params: { funnel_id: strin
     }
 
     // Obtener el prospecto asociado al funnel_id y prospect_id específico, junto con el cliente
-    const prospect = await prisma.Prospect.findUnique({
+    const prospect = await prisma.prospect.findUnique({
       where: { 
         prospect_id: parseInt(prospect_id) 
       },
@@ -39,7 +42,7 @@ export async function GET(req: Request, { params }: { params: { funnel_id: strin
     });
   } catch (error) {
     // Manejar errores
-    console.log(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Error fetching prospect and funnel stages:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

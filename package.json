@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node src/server.ts & next dev  --turbopack",
+    "dev": "next dev  --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "@prisma/client": "^6.2.1",
     "@types/react-icons": "^3.0.0",
     "bcrypt": "^5.1.1",
@@ -19,6 +20,7 @@
     "express": "^4.21.2",
     "flowbite-react": "^0.10.2",
     "framer-motion": "^12.0.5",
+    "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.12.0",
     "next": "15.1.5",
@@ -40,6 +42,7 @@
     "@types/cookie": "^1.0.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20.17.14",
     "@types/node-cron": "^3.0.11",

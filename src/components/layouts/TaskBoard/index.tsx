@@ -4,6 +4,8 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { PanInfo } from "framer-motion"; // Importa PanInfo
+
 
 interface Client {
   client_id: number;
@@ -26,7 +28,13 @@ interface Prospect {
 
 interface Stage {
   name: string;
+  stage_id:number;
   description: string;
+}
+
+export interface TasksData {
+  prospects: Prospect[];
+  stages: Stage[];
 }
 
 interface TaskBoardProps {
@@ -34,18 +42,21 @@ interface TaskBoardProps {
     prospects: Prospect[];
     stages: Stage[];
   };
-  setTasks: React.Dispatch<React.SetStateAction<any>>;
+  setTasks: React.Dispatch<React.SetStateAction<{ prospects: Prospect[]; stages: Stage[] }>>;
 }
 
 interface TaskCardProps {
   task: Prospect;
-  onDragEnd: (taskId: number, info: any) => void;
+  onDragEnd: (taskId: number, info: PanInfo) => void;
   isUpdating: boolean;
 }
+
 
 const TaskCard = ({ task, onDragEnd, isUpdating }: TaskCardProps) => {
     const router = useRouter();
   
+
+    
     return (
       <motion.div
         className={`bg-light-bg-primary dark:bg-dark-bg-primary p-4 rounded-lg shadow-md 
@@ -143,7 +154,7 @@ export default function TaskBoard({ tasks, setTasks }: TaskBoardProps) {
       );
     }
   
-    const handleDragEnd = async (taskId: number, info: any) => {
+    const handleDragEnd = async (taskId: number, info: PanInfo) => {
         if (updatingTask) return;
       
         const threshold = 100;
@@ -173,11 +184,11 @@ export default function TaskBoard({ tasks, setTasks }: TaskBoardProps) {
           await updateTaskStatus(taskId, newStageId.toString(), newStageName);
         }
       };
-      
+    
       const updateTaskStatus = async (taskId: number, newStageId: string, newStageName: string) => {
         setUpdatingTask(taskId);
         try {
-          setTasks((prevTasks: any) => ({
+          setTasks((prevTasks: { prospects: Prospect[]; stages: Stage[] }) => ({
             ...prevTasks,
             prospects: prevTasks.prospects.map((task: Prospect) =>
               task.prospect_id === taskId ? { ...task, stage: newStageId } : task
@@ -200,11 +211,14 @@ export default function TaskBoard({ tasks, setTasks }: TaskBoardProps) {
           }
         } catch (error) {
           console.error('Error:', error);
-          setTasks((prevTasks: any) => ({
+          setTasks((prevTasks: TasksData): TasksData => ({
             ...prevTasks,
             prospects: prevTasks.prospects.map((task: Prospect) =>
               task.prospect_id === taskId
-                ? { ...task, stage: tasks.prospects.find(t => t.prospect_id === taskId)?.stage }
+                ? { 
+                    ...task, 
+                    stage: prevTasks.prospects.find(t => t.prospect_id === taskId)?.stage ?? task.stage 
+                  }
                 : task
             ),
           }));

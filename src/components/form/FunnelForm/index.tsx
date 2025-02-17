@@ -1,7 +1,7 @@
 // /components/form/FunnelForm/index.tsx
 'use client';
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { DynamicInput } from "@/components/ui/inputs/DynamicInput";
 
 interface Input {
@@ -19,7 +19,8 @@ interface FormData {
 
 interface FunnelFormProps {
   formData: FormData;
-  setFormData: (data: FormData) => void;
+  setFormData: Dispatch<SetStateAction<FormData>>;
+  patch: boolean;
 }
 
 export function FunnelForm({ formData, setFormData }: FunnelFormProps) {

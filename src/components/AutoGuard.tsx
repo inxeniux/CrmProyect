@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import jwt from 'jsonwebtoken';
+import { getAuthToken, decodeToken } from '@/lib/auth';
 
 const PUBLIC_ROUTES = [
   '/login',
@@ -23,24 +23,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkAuth = () => {
-      // Obtener token
-      const token = localStorage.getItem('auth_token');
+      const token = getAuthToken();
+      const decoded = token ? decodeToken() : null;
 
       // Si es una ruta pública y el token está presente y el status es 'Active', redirigir a '/funnels'
-      if ((PUBLIC_ROUTES.includes(pathname) || pathname === '/registerbusiness')  && token ) {
-        try {
-          const decoded = jwt.decode(token) as any; // Usar decode en lugar de verify en el cliente
-         console.log(decoded)
-          if (decoded.status === 'Active') {
-            router.push('/funnels');
-            return;
-          }
-        } catch (error) {
-          console.error('Error decoding token:', error);
-          localStorage.removeItem('auth_token');
-          router.push('/login');
-          return;
-        }
+      if ((PUBLIC_ROUTES.includes(pathname) || pathname === '/registerbusiness') && decoded?.status === 'Active') {
+        router.push('/funnels');
+        return;
       }
 
       // Si es una ruta protegida y no hay token, redirigir a login
@@ -49,21 +38,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (token) {
-        try {
-          const decoded = jwt.decode(token) as any; // Usar decode en lugar de verify en el cliente
-
-          if (decoded.status === 'PENDING_BUSINESS' && 
-              !pathname.includes('/registerbusiness')) {
-            router.push('/registerbusiness');
-          } else if (decoded.status === 'Active' && 
-                    pathname.includes('/registerbusiness')) {
-            router.push('/funnels');
-          }
-        } catch (error) {
-          console.error('Error decoding token:', error);
-          localStorage.removeItem('auth_token');
-          router.push('/login');
+      // Manejar estados específicos del usuario
+      if (decoded) {
+        if (decoded.status === 'PENDING_BUSINESS' && !pathname.includes('/registerbusiness')) {
+          router.push('/registerbusiness');
+        } else if (decoded.status === 'Active' && pathname.includes('/registerbusiness')) {
+          router.push('/funnels');
         }
       }
     };

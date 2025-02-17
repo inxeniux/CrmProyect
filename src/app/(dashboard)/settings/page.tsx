@@ -15,7 +15,7 @@ export default function SettingsPage() {
  const tabs: TabType[] = ['Perfil', 'Negocio', 'Pagos', 'Diseño'];
 
  return (
-   <NavbarSideComponent nameButton="guardar" name="Configuraciones">
+   <NavbarSideComponent setOpenModal={() => {}} nameButton="guardar" name="Configuraciones">
      <ul className="flex pl-4 mt-5">
        {tabs.map((tab) => (
          <li

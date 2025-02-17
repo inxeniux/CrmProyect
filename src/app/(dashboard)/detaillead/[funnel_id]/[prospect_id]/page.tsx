@@ -8,15 +8,18 @@ import PaymentLink from "@/components/ui/stripepayment";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+
+ interface Client {
+  contact_name: string;
+  email: string;
+  phone_number: string;
+  address: string;
+  website: string;
+}
 interface Task {
   prospect_id: string;
-  client: {
-    contact_name: string;
-    email: string;
-    phone_number: string;
-    address: string;
-    website: string;
-  };
+  Client: Client;
+  prospect: string;
   stage: string;
   deal_closing_date: string;
   deal_value: string;
@@ -41,7 +44,7 @@ interface Payment {
 export default function DetailComponent() {
   const params = useParams();
   const funnel_id = params.funnel_id;
-  const prospect_id = params.prospect_id;
+  const prospect_id = params.prospect_id as string;
 
   const [formActivity, setFormActivity] = useState<FormActivity>({
     notes: "",
@@ -106,7 +109,7 @@ export default function DetailComponent() {
 
   return (
    <NavbarSideComponent
-   setOpenModal={false} 
+     setOpenModal={() => {}}
      nameButton="agregar cliente" 
      name="Detalles"
    >

@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import TaskBoard from '@/components/layouts/TaskBoard';
 import { useParams } from 'next/navigation';
 import NavbarSideComponent from '@/components/layouts/NavbarSideComponent';
-import ModalGeneral from '@/components/layouts/modals/modalGeneral';
+import SideModal from '@/components/layouts/SideModal';
+import OpportunityForm from '@/components/form/OpportunityForm';
 
 interface Stage {
   name: string;
@@ -27,6 +28,7 @@ interface Prospect {
   deal_value: number;
   deal_closing_date: string;
   notes: string;
+  funnel_id: number; // Añadido el campo faltante
   Client: Client;
 }
 
@@ -35,14 +37,36 @@ interface TasksData {
   stages: Stage[];
 }
 
+
+interface FormData {
+  client_id: number,
+  deal_value: number,
+  stage: string,
+  notes: string,
+  deal_closing_date: string,
+  funnel_id: number;
+}
+
+
+
 export default function ProspectsPage() {
-  const params = useParams();
-  const [openModal, setOpenModal] = useState(false);
+  const {id} = useParams();
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const onClose = () => setOpenModal(false);
+  const [formData, setFormData] = useState<FormData>({
+    client_id: 0,
+    deal_value: 0,
+    stage: '',
+    notes: '',
+    deal_closing_date: '',
+    funnel_id: 0
+  });
   const [tasks, setTasks] = useState<TasksData>({
     prospects: [],
     stages: []
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingOportunity, setLoadingOportunity] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -53,7 +77,7 @@ export default function ProspectsPage() {
   const fetchProspects = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/prospects/funnel/${params.id}`, {
+      const response = await fetch(`/api/prospects/funnel/${id}`, {
         headers: {
           'Content-Type': 'application/json',
           // Si usas autenticación, añade el header necesario
@@ -74,6 +98,35 @@ export default function ProspectsPage() {
       setLoading(false);
     }
   };
+
+ 
+  
+   const handleSubmit = async (e: React.FormEvent) => {
+     e.preventDefault();
+     setLoadingOportunity(true);
+     setFormData((prevState)=>({
+      ...prevState,
+      funnel_id: parseInt(id), 
+     }))
+     console.log(formData)
+     try {
+       const response = await fetch('/api/prospects/stages', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(formData)
+       });
+  
+       if (response.ok) {
+         alert('Lead creado exitosamente!');
+         setOpenModal(false);
+       }
+     } catch (err) {
+       console.error('Error:', err);
+     } finally {
+      setLoadingOportunity(false);
+     }
+   };
+  
 
   if (loading) {
     return (
@@ -108,12 +161,21 @@ export default function ProspectsPage() {
            nameButton="Prospectos" 
            name="Prospectos"
          >
-          <ModalGeneral 
+            <SideModal patch={false} isOpen={openModal} loading={loadingOportunity} onClose={onClose} title={"Crear Funnel"} onSubmit={handleSubmit}> 
+            {typeof id === 'string' && (
+  <OpportunityForm
+    id={id}
+    formData={formData}
+    setFormData={setFormData}
+  />
+)}
+      </SideModal>
+          {/*<ModalGeneral 
         
                  id={params.id}
                  openModal={openModal} 
                  setOpenModal={setOpenModal} 
-               />
+               />*/}
               
         <TaskBoard tasks={tasks} setTasks={setTasks} />
         </NavbarSideComponent>

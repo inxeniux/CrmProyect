@@ -3,13 +3,19 @@ import prisma from '@/lib/prisma';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { funnel_id?: string } } // Extraer params correctamente
-) {
-  if (!params?.funnel_id || isNaN(Number(params.funnel_id))) {
-    return NextResponse.json({ error: 'Funnel ID is required and must be a number' }, { status: 400 });
+  { params }: { params: { funnel_id?: string } }
+): Promise<NextResponse> {
+  const funnelId = params?.funnel_id;
+
+  // Validar que funnel_id esté presente y sea un número válido
+  if (!funnelId || isNaN(Number(funnelId))) {
+    return NextResponse.json(
+      { error: 'Funnel ID is required and must be a valid number' },
+      { status: 400 }
+    );
   }
 
-  const funnelIdNum = parseInt(params.funnel_id, 10);
+  const funnelIdNum = parseInt(funnelId, 10);
 
   try {
     // Obtener todos los prospectos asociados al funnel_id con sus clientes
@@ -27,7 +33,10 @@ export async function GET(
     // Responder con los prospectos y sus stages
     return NextResponse.json({ funnel_id: funnelIdNum, prospects, stages });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    console.error('Error fetching prospects and funnel stages:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

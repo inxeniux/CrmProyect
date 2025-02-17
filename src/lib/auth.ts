@@ -1,17 +1,32 @@
 // src/lib/auth.ts
-import { serialize } from 'cookie';
+import Cookies from 'js-cookie';
+import jwt from 'jsonwebtoken';
 
-export const setAuthCookie = (token: string) => {
-  // Configuración de la cookie
-  const cookieOptions = {
-    httpOnly: true,
+const AUTH_COOKIE_NAME = 'auth_token';
+export const getAuthToken = () => Cookies.get(AUTH_COOKIE_NAME);
+
+export const setAuthToken = (token: string) => {
+  // Set cookie with secure flag and expires in 7 days
+  Cookies.set(AUTH_COOKIE_NAME, token, {
+    expires: 7,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict' as const,
-    maxAge: 7 * 24 * 60 * 60, // 7 días
-    path: '/'
-  };
-
-  // Serializar la cookie
-  return serialize('auth_token', token, cookieOptions);
+    sameSite: 'strict'
+  });
 };
 
+export const removeAuthToken = () => {
+  Cookies.remove(AUTH_COOKIE_NAME);
+};
+
+export const decodeToken = () => {
+  const token = getAuthToken();
+  if (!token) return null;
+  
+  try {
+    return jwt.decode(token);
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    removeAuthToken();
+    return null;
+  }
+};

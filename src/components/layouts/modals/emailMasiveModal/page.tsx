@@ -68,6 +68,7 @@ export default function MassEmailModal({isOpen,onClose}:MassEmailModalProps) {
       console.error("Error al buscar el embudo:", err);
     }
   };
+  
   const handleFunnelSelect = (funnel: { name: string; funnel_id: number }) => {
     setFunnel(funnel.funnel_id)
     handleStagesFunnel(funnel.funnel_id);
