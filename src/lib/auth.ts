@@ -14,6 +14,8 @@ export const setAuthToken = (token: string) => {
   });
 };
 
+//hola
+
 export const removeAuthToken = () => {
   Cookies.remove(AUTH_COOKIE_NAME);
 };
