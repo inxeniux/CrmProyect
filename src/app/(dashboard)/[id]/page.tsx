@@ -76,6 +76,11 @@ export default function ProspectsPage() {
  
   const fetchProspects = async () => {
     try {
+      const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('auth_token='))
+    ?.split('=')[1];
+    console.log(token)
       setLoading(true);
       const response = await fetch(`/api/prospects/funnel/${id}`, {
         headers: {
@@ -115,7 +120,7 @@ export default function ProspectsPage() {
          headers: { 'Content-Type': 'application/json' },
          body: JSON.stringify(formData)
        });
-  
+    
        if (response.ok) {
          alert('Lead creado exitosamente!');
          setOpenModal(false);

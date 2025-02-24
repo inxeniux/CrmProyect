@@ -105,8 +105,6 @@ export class RegistrationService {
       throw error;
     }
   }
-
-
 static async completeRegistration(data: CompleteRegistrationData) {
   const { email, code, password, firstName, lastName, phoneNumber } = data;
   console.log(password)
@@ -200,11 +198,10 @@ static async completeBuisnessRegistration(data: CompleteRegistrationBusinessData
       }
     });
      
-    console.log(decoded)
       // Create user usando el ID del token
      const user =  await prisma.user.update({
         where: { 
-          email: decoded.payload.email
+          email: decoded?.payload.email
         },
         data: {
           status: 'Active',

@@ -64,7 +64,7 @@ export const emailService = {
   ): Promise<EmailResponse> {
     try {
       const data = await resend.emails.send({
-        from: 'Niux CRM <noreply@niuxcrm.com>',
+        from: 'Niux CRM <hola@knowmeapp.com>',
         to: email,
         subject: '¡Bienvenido a Niux CRM!',
         html: `
@@ -80,6 +80,65 @@ export const emailService = {
                 Tu cuenta ha sido verificada exitosamente. Ahora formas parte de ${businessName} 
                 en Niux CRM.
               </p>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="https://niuxcrm.com/dashboard" 
+                   style="background-color: #007bff; color: white; padding: 12px 24px; 
+                          text-decoration: none; border-radius: 4px; font-weight: bold;">
+                  Ir al Dashboard
+                </a>
+              </div>
+
+              <p style="color: #666; font-size: 16px; line-height: 1.5;">
+                Con Niux CRM podrás:
+                <ul>
+                  <li>Gestionar tus clientes y prospectos</li>
+                  <li>Dar seguimiento a tus oportunidades de venta</li>
+                  <li>Organizar tus actividades y tareas</li>
+                  <li>Analizar tu desempeño comercial</li>
+                </ul>
+              </p>
+            </div>
+          </div>
+        `
+      });
+
+      return { success: true, data };
+    } catch (error) {
+      console.error('Error al enviar email de bienvenida:', error);
+      return { success: false, error: error.message };
+    }
+  },
+  async sendWelcomeEmailInvitation(
+    email: string,
+    name: string,
+    password:string,
+    businessName: string
+  ): Promise<EmailResponse> {
+    try {
+      const data = await resend.emails.send({
+        from: 'Niux CRM <hola@knowmeapp.com>',
+        to: email,
+        subject: '¡Bienvenido a Niux CRM!',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h1 style="color: #333; text-align: center; font-size: 24px;">¡Bienvenido a Niux CRM!</h1>
+              
+              <p style="color: #666; font-size: 16px; line-height: 1.5;">
+                ¡Hola ${name}!
+              </p>
+              
+              <p style="color: #666; font-size: 16px; line-height: 1.5;">
+                Ahora formas parte de ${businessName} 
+                en Niux CRM. la siguiente es tu contraseña puedes ingresar para cambiar la contraseña 
+              </p>
+
+              <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0;">
+                <span style="font-size: 20px; font-weight: bold; color: #007bff; letter-spacing: 4px;">
+                  ${password}
+                </span>
+              </div>
 
               <div style="text-align: center; margin: 30px 0;">
                 <a href="https://niuxcrm.com/dashboard" 

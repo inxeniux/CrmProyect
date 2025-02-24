@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       );
     }
 
-    
+    console.log(user.businessId)
 
     // Generate JWT token
     const token = jwt.sign(

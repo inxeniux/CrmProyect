@@ -75,6 +75,10 @@ export default function BusinessRegisterPage() {
     }
 
     const loadingToast = showToast.loading('Procesando...');
+    const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('auth_token='))
+    ?.split('=')[1];
 
     try {
       const response = await fetch('/api/auth/registration-business', {
@@ -82,7 +86,11 @@ export default function BusinessRegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(inputValues),
+        body: JSON.stringify({
+          ...inputValues,
+          token
+
+        }),
         credentials: 'include', // Para enviar las cookies
       });
 
