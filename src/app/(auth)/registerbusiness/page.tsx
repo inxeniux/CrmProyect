@@ -17,6 +17,16 @@ interface BusinessFormData {
   address: string;
 }
 
+
+interface Errors {
+  name?: string;
+  industry?: string;
+  email?: string;
+  phoneNumber?: string;
+  website?: string;
+  address?: string;
+}
+
 interface FocusState {
   name: boolean;
   industry: boolean;
@@ -49,6 +59,36 @@ export default function BusinessRegisterPage() {
     address: false,
   });
 
+
+    const [errors, setErrors] = useState<Errors>({
+    name: '',
+    industry: '',
+    email: '',
+    phoneNumber: '',
+    website: '',
+    address: '',
+    });
+  
+    const validarFormulario = (): boolean => {
+      const errores: Errors = {};
+  
+      if (!inputValues.name.trim()) errores.name = "Este campo es obligatorio";
+      if (!inputValues.industry.trim()) errores.industry = "Este campo es obligatorio";
+      if (!inputValues.phoneNumber.trim()) errores.phoneNumber = "Este campo es obligatorio";
+      if (!inputValues.website.trim()) errores.website = "Este campo es obligatorio";
+      if (!inputValues.address.trim()) errores.address = "Este campo es obligatorio";
+      
+      if (!inputValues.email.trim()) {
+        errores.email = "Este campo es obligatorio";
+      } else if (!/^\S+@\S+\.\S+$/.test(inputValues.email)) {
+        errores.email = "Correo electrónico no válido";
+      }
+
+  
+      setErrors(errores);
+      return Object.keys(errores).length === 0;
+    };
+
   const handleFocus = (field: keyof FocusState): void => {
     setIsFocused(prev => ({ ...prev, [field]: true }));
   };
@@ -68,10 +108,12 @@ export default function BusinessRegisterPage() {
 
   const handleVerification = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-
+ 
     if (!acceptTerms) {
       showToast.error('Debe aceptar los términos y condiciones');
       return;
+    }else if(validarFormulario()){
+      return
     }
 
     const loadingToast = showToast.loading('Procesando...');
@@ -117,29 +159,45 @@ export default function BusinessRegisterPage() {
     }
   };
 
+  
+
   return (
-    <div className="w-full max-w-md">
-      <div className="flex justify-between items-center mb-8 relative">
-        <Image
-          src={theme === 'light' ? "/images/niux.png" : "/images/niuxdark.png"}
-          alt="Niux Logo"
-          width={100}
-          height={40}
-        />
-        
-        <button 
-          onClick={toggleTheme} 
-          className="p-2 rounded-full bg-gray-50 dark:bg-primary-50"
-          type="button"
-        >
-          <MdOutlineLightMode className="text-md dark:text-white text-gray-800"/>
-        </button>
+    <div className="min-h-screen flex flex-col lg:flex-row relative">
+      {/* Hero Image Section */}
+      <div className="lg:w-1/2 h-[200px] lg:h-screen relative order-2 lg:order-1 dark:bg-dark-bg-primary bg-light-bg-primary p-4 lg:p-6">
+        <div className="w-full h-full relative rounded-2xl overflow-hidden">
+          <Image
+            src="/images/hero.png"
+            alt="Register illustration"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
       </div>
 
-      <button
+      {/* Form Section */}
+      <div className="lg:w-1/2 flex items-end lg:items-center justify-center p-6 dark:bg-dark-bg-primary bg-light-bg-primary order-2 lg:order-1 flex-1">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8 relative">
+            {theme === 'light' ? (
+              <Image src="/images/niux.png" alt="Niux Logo" width={100} height={40} />
+            ) : (
+              <Image src="/images/niuxdark.png" alt="Niux Logo" width={100} height={40} />
+            )}
+            
+            <button 
+              onClick={toggleTheme} 
+              className="p-2 rounded-full bg-gray-50 dark:bg-primary-50"
+            >
+              <MdOutlineLightMode className="text-md dark:text-white text-gray-800"/>
+            </button>
+          </div>
+          <button
         onClick={logout}
         className="absolute top-2 right-2 bg-light-bg-primary dark:bg-dark-bg-primary 
-          mb-2 flex justify-center items-center h-14 w-14 
+          mb-2 flex justify-center items-center h-10 w-10 
           border border-light-border-light dark:border-red-600 
           rounded-full text-xl transition duration-200
           text-light-text-primary dark:text-red-600
@@ -147,15 +205,14 @@ export default function BusinessRegisterPage() {
       >
         <MdLogout/>
       </button>
+          <h2 className="text-2xl font-semibold mb-2 dark:text-white text-gray-900">
+            Registrate aquí
+          </h2>
+          <p className="text-sm mb-6 dark:text-dark-text-secondary text-light-text-secondary">
+            Vamos a prepararte para que puedas acceder a tu cuenta personal.
+          </p>
 
-      <h2 className="text-2xl font-semibold mb-2 dark:text-white text-gray-900">
-        Crear empresa
-      </h2>
-      <p className="text-sm mb-6 dark:text-dark-text-secondary text-light-text-secondary">
-        Vamos a prepararte para que puedas acceder a tu cuenta personal.
-      </p>
-
-      <form onSubmit={handleVerification} className="space-y-4">
+          <form onSubmit={handleVerification} className="space-y-4">
         {/* Grid para nombre y sector */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nombre del negocio */}
@@ -182,6 +239,7 @@ export default function BusinessRegisterPage() {
             >
               Negocio
             </label>
+           {errors.name && <p className='text-red-600 text-xs'>{errors.name}</p>}
           </div>
 
           {/* Sector */}
@@ -208,6 +266,7 @@ export default function BusinessRegisterPage() {
             >
               Sector
             </label>
+            {errors.industry && <p className='text-red-600 text-xs'>{errors.industry}</p>}
           </div>
         </div>
 
@@ -236,6 +295,7 @@ export default function BusinessRegisterPage() {
             >
               Website
             </label>
+            {errors.website && <p className='text-red-600 text-xs'>{errors.website}</p>}
           </div>
 
           <div className="relative">
@@ -261,6 +321,7 @@ export default function BusinessRegisterPage() {
             >
               Número de teléfono
             </label>
+            {errors.phoneNumber && <p className='text-red-600 text-xs'>{errors.phoneNumber}</p>}
           </div>
         </div>
 
@@ -288,6 +349,7 @@ export default function BusinessRegisterPage() {
           >
             Dirección del negocio
           </label>
+          {errors.address && <p className='text-red-600 text-xs'>{errors.address}</p>}
         </div>
 
         {/* Email */}
@@ -299,7 +361,7 @@ export default function BusinessRegisterPage() {
             onFocus={() => handleFocus('email')}
             onBlur={() => handleBlur('email')}
             className="w-full px-4 py-3 rounded border bg-transparent dark:text-white text-gray-900 border-gray-500 dark:border-white focus:border-gray-900 dark:focus:border-white peer transition-colors"
-            required
+            
           />
           <label
             className={`absolute left-3 transition-all pointer-events-none
@@ -314,6 +376,7 @@ export default function BusinessRegisterPage() {
           >
             Email
           </label>
+          {errors.email && <p className='text-red-600 text-xs'>{errors.email}</p>}
         </div>
 
         {/* Términos y condiciones */}
@@ -347,12 +410,15 @@ export default function BusinessRegisterPage() {
         </button>
       </form>
 
-      <p className="mt-6 text-center dark:text-dark-text-tertiary text-light-text-tertiary">
-        ¿Ya tienes una cuenta?{' '}
-        <Link href="/login" className="text-primary-50 hover:text-primary-600">
-          Iniciar sesión
-        </Link>
-      </p>
+          <p className="mt-6 text-center dark:text-dark-text-tertiary text-light-text-tertiary">
+            ¿Ya tienes una cuenta?{' '}
+            <Link href="/login" className="text-primary-50 hover:text-primary-600">
+              Iniciar sesión
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
+    
   );
 }

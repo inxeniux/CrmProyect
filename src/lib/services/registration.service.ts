@@ -41,7 +41,11 @@ export class RegistrationService {
       });
   
       if (existingUser) {
-        throw new Error('El email ya está registrado');
+        return {
+          success: false,
+          status: 409,
+          message: 'El email ya está registrado'
+        };
       }
   
       // Buscar la verificación más reciente para este email

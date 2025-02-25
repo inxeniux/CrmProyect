@@ -45,7 +45,11 @@ export default function RegisterPage() {
         showToast.updateLoading(loadingToast, '¡Código enviado exitosamente!', 'success');
         setRegistrationData(data);
         setStep(1);
-      } else {
+      } 
+      else if(response.status === 409) {
+        throw new Error("Correo electronico ya creado");
+      }
+      else {
         throw new Error('Error en el registro inicial');
       }
     } catch (error) {
@@ -54,7 +58,7 @@ export default function RegisterPage() {
         error instanceof Error ? error.message : 'Error al iniciar registro', 
         'error'
       );
-      console.error('Error:', error);
+      console.log( error);
     }
   };
 

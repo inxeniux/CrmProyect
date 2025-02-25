@@ -10,6 +10,24 @@ import { BsEye } from 'react-icons/bs';
 import { useState } from 'react';
 import Link from 'next/link';
 
+interface InputValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface Errors {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
 interface RegisterFormProps {
   initialData: any;
   onSubmit: (data: any) => void;
@@ -27,9 +45,48 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
     password: false,
     confirmPassword: false,
   });
-  const [inputValues, setInputValues] = useState(initialData);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [inputValues, setInputValues] = useState<InputValues>(initialData);
 
+  const [errors, setErrors] = useState<Errors>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const validarFormulario = (): boolean => {
+    const errores: Errors = {};
+
+    if (!inputValues.firstName.trim()) errores.firstName = "Este campo es obligatorio";
+    if (!inputValues.lastName.trim()) errores.lastName = "Este campo es obligatorio";
+    
+    if (!inputValues.email.trim()) {
+      errores.email = "Este campo es obligatorio";
+    } else if (!/^\S+@\S+\.\S+$/.test(inputValues.email)) {
+      errores.email = "Correo electrónico no válido";
+    }
+
+    if (!inputValues.phoneNumber.trim()) errores.phoneNumber = "Este campo es obligatorio";
+
+    if (!inputValues.password.trim()) {
+      errores.password = "Este campo es obligatorio";
+    } else if (inputValues.password.length < 6) {
+      errores.password = "La contraseña debe tener al menos 6 caracteres";
+    }
+
+    if (!inputValues.confirmPassword.trim()) {
+      errores.confirmPassword = "Este campo es obligatorio";
+    } else if (inputValues.confirmPassword !== inputValues.password) {
+      errores.confirmPassword = "Las contraseñas no coinciden";
+    }
+
+    setErrors(errores);
+    return Object.keys(errores).length === 0;
+  };
+  
   const handleFocus = (field) => {
     setIsFocused(prev => ({ ...prev, [field]: true }));
   };
@@ -42,9 +99,13 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
     setInputValues(prev => ({ ...prev, [field]: value }));
   };
 
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(inputValues);
+    if(validarFormulario()){
+      onSubmit(inputValues);
+    }
+   
   };
 
   return (
@@ -99,12 +160,13 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
                   onChange={(e) => handleChange('firstName', e.target.value)}
                   onFocus={() => handleFocus('firstName')}
                   onBlur={() => handleBlur('firstName')}
-                  className="w-full px-4 py-3 rounded border
+                  className={`w-full px-4 py-3 rounded border
                     bg-transparent
                     dark:text-white text-gray-900
+                    
                     border-gray-500 dark:border-white
                     focus:border-gray-900 dark:focus:border-white
-                    peer transition-colors"
+                    peer transition-colors`}
                 />
                 <label
                   className={`absolute left-3 transition-all pointer-events-none
@@ -119,6 +181,8 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
                 >
                   Nombres
                 </label>
+                {errors.firstName && <p className="text-red-500">{errors.firstName}</p>}
+
               </div>
 
               {/* Apellidos */}
@@ -149,6 +213,8 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
                 >
                   Apellidos
                 </label>
+                {errors.lastName && <p className="text-red-500">{errors.lastName}</p>}
+
               </div>
             </div>
 
@@ -182,6 +248,8 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
                 >
                   Email
                 </label>
+                {errors.email && <p className="text-red-500">{errors.email}</p>}
+
               </div>
 
               {/* Teléfono */}
@@ -212,6 +280,8 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
                 >
                   N.Celular
                 </label>
+                {errors.phoneNumber && <p className="text-red-500">{errors.phoneNumber}</p>}
+
               </div>
             </div>
 
@@ -243,6 +313,8 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
               >
                 Contraseña
               </label>
+              {errors.password && <p className="text-red-500">{errors.password}</p>}
+
               <button
                 type="button"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -297,6 +369,8 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
                   <BsEye className="w-5 h-5" />
                 )}
               </button>
+              {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword}</p>}
+
             </div>
 
             {/* Términos y condiciones */}

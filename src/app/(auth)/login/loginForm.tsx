@@ -20,14 +20,23 @@ interface InputState {
     email: boolean;
     password: boolean;
   }
+
+  interface Errors {
+    email?: string;
+    password?: string;
+  }
   
 export default function LoginForm() {
     const { theme, toggleTheme } = useTheme();
     const router = useRouter();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isFocused, setIsFocused] = useState({ email: false, password: false });
-    const [inputValues, setInputValues] = useState({ email: '', password: '' });
-  
+    const [inputValues, setInputValues] = useState<InputState>({ email: '', password: '' });
+  const [errors, setErrors] = useState<Errors>({
+      email: "",
+      password: ""
+      });
+    
     const handleFocus = (field: keyof FocusState): void => {
       setIsFocused(prev => ({ ...prev, [field]: true }));
     };
@@ -40,9 +49,31 @@ export default function LoginForm() {
       setInputValues(prev => ({ ...prev, [field]: value }));
     };
   
+    const validarFormulario = (): boolean => {
+      const errores: Errors = {};
+  
+      if (!inputValues.password.trim()) errores.password = "Este campo es obligatorio";
+      if (!inputValues.email.trim()) {
+        errores.email = "Este campo es obligatorio";
+      } else if (!/^\S+@\S+\.\S+$/.test(inputValues.email)) {
+        errores.email = "Correo electrónico no válido";
+      }
+
+  
+      setErrors(errores);
+      return Object.keys(errores).length === 0;
+    };
      const handleVerification = async (e: React.FormEvent) => {
         e.preventDefault();  // Evita la recarga de la página al enviar el formulario
-      console.log(inputValues)
+      
+        // Primero, valida el formulario
+        const isValid = validarFormulario();
+
+        // Si el formulario no es válido, no continuamos con la solicitud
+        if (!isValid) {
+         return; // Aquí puedes mostrar algún mensaje o hacer algo en caso de que no sea válido
+         }
+              
         const loadingToast = showToast.loading('Procesando...');
         try {
           const response = await fetch('/api/auth/login', {
@@ -163,6 +194,7 @@ export default function LoginForm() {
           >
             Email
           </label>
+          {errors.email && <p className='text-sm text-red-600 mt-1'>{errors.email}</p>}
         </div>
   
         <div className="relative">
@@ -204,6 +236,7 @@ export default function LoginForm() {
               <BsEye className="w-5 h-5" />
             )}
           </button>
+          {errors.password && <p className='text-sm text-red-600 mt-1'>{errors.password}</p>}
         </div>
   
               <div className="flex items-center justify-between text-sm">
