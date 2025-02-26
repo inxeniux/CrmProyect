@@ -1,9 +1,8 @@
-"use client";
-
-import { useState } from "react";
-import { FiEdit2, FiTrash2, FiCheck, FiX } from "react-icons/fi";
+import { useEffect, useState, useCallback } from "react";
+import { FiTrash2, FiEdit } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { showToast } from "@/utils/toast";
+import Cookies from "js-cookie";
 
 interface User {
   id: string;
@@ -11,190 +10,351 @@ interface User {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  status: "active" | "inactive";
+  status: string;
+  role: string;
 }
 
 export default function UsersTable() {
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const token = Cookies.get("auth_token") ?? "";
+  const businessId = Cookies.get("businessId") ?? "";
 
-  const handleEdit = (userId: string) => {
-    setSelectedUser(userId);
+  useEffect(() => {
+    if (businessId) fetchUsers();
+  }, [businessId]);
+
+  const fetchUsers = useCallback(async () => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `/api/create-user-invitation/${businessId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Error al obtener los usuarios");
+
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+      showToast.error("Error al cargar los usuarios");
+    } finally {
+      setLoading(false);
+    }
+  }, [businessId, token, loading]);
+
+  const confirmDeleteUser = (user: User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
   };
 
-  const handleDelete = async (userId: string) => {
-    const confirmDelete = window.confirm(
-      "¿Estás seguro de eliminar este usuario?"
-    );
+  const deleteUser = async () => {
+    if (!selectedUser) return;
 
-    if (confirmDelete) {
-      const loadingToast = showToast.loading("Eliminando usuario...");
-
-      try {
-        const response = await fetch(`/api/users/${userId}`, {
+    try {
+      const response = await fetch(
+        `/api/create-user-invitation/${selectedUser.id}`,
+        {
           method: "DELETE",
-        });
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-        if (!response.ok) throw new Error("Error al eliminar usuario");
+      if (!response.ok) throw new Error("Error al eliminar el usuario");
 
-        setUsers(users.filter((user) => user.id !== userId));
-        showToast.updateLoading(
-          loadingToast,
-          "Usuario eliminado exitosamente",
-          "success"
-        );
-      } catch (error) {
-        console.error(error);
-        showToast.updateLoading(
-          loadingToast,
-          "Error al eliminar usuario",
-          "error"
-        );
-      }
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user.id !== selectedUser.id)
+      );
+      showToast.success("Usuario eliminado correctamente");
+    } catch (error) {
+      console.error("Error al eliminar usuario:", error);
+      showToast.error("Error al eliminar el usuario");
+    } finally {
+      closeModal();
     }
   };
 
-  const handleStatusToggle = async (
-    userId: string,
-    currentStatus: "active" | "inactive"
-  ) => {
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
-    const loadingToast = showToast.loading("Actualizando estado...");
+  const openEditModal = (user: User) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedUser(null);
+    setIsModalOpen(false);
+    setIsEditModalOpen(false);
+  };
+
+  const handleEditUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUser) return;
 
     try {
-      const response = await fetch(`/api/users/${userId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const response = await fetch(
+        `/api/create-user-invitation/${selectedUser.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            id: selectedUser.id,
+            phoneNumber: selectedUser.phoneNumber,
+            status: selectedUser.status,
+            role: selectedUser.role,
+          }),
+        }
+      );
+      console.log(response);
+      if (!response.ok) throw new Error("Error al actualizar el usuario");
 
-      if (!response.ok) throw new Error("Error al actualizar estado");
-
-      setUsers(
-        users.map((user) =>
-          user.id === userId ? { ...user, status: newStatus } : user
+      const updatedUser = await response.json();
+      console.log(updatedUser);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
         )
       );
-
-      showToast.updateLoading(
-        loadingToast,
-        "Estado actualizado exitosamente",
-        "success"
-      );
+      showToast.success("Usuario actualizado correctamente");
+      closeModal();
     } catch (error) {
-      console.error(error);
-      showToast.updateLoading(
-        loadingToast,
-        "Error al actualizar estado",
-        "error"
-      );
+      console.error("Error al actualizar usuario:", error);
+      showToast.error("Error al actualizar el usuario");
     }
   };
 
   return (
-    <div className="mt-4 sm:mt-6 md:mt-8 bg-light-bg-primary dark:bg-dark-bg-primary rounded-lg shadow-sm">
-      {/* Container con indicador de scroll */}
+    <div className="mt-6 bg-light-bg-primary dark:bg-dark-bg-primary rounded-lg shadow-md transition-colors duration-300">
       <div className="relative">
-        {/* Indicador de scroll */}
-        <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-light-bg-primary dark:from-dark-bg-primary pointer-events-none md:hidden" />
-
-        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary-50 scrollbar-track-light-bg-secondary dark:scrollbar-track-dark-bg-secondary">
-          <table className="min-w-full divide-y divide-light-border-primary dark:divide-dark-border-primary">
-            <thead className="bg-light-bg-secondary dark:bg-dark-bg-secondary">
-              <tr>
-                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                  Nombre
-                </th>
-                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="hidden sm:table-cell px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                  Teléfono
-                </th>
-                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                  Estado
-                </th>
-                <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-[11px] sm:text-xs font-medium text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-light-bg-primary dark:bg-dark-bg-primary divide-y divide-light-border-primary dark:divide-dark-border-primary">
-              {users.map((user) => (
-                <motion.tr
-                  key={user.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="hover:bg-light-bg-secondary dark:hover:bg-dark-bg-secondary transition-colors duration-200"
-                >
-                  <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4">
-                    <div className="text-xs sm:text-sm text-light-text-primary dark:text-dark-text-primary truncate max-w-[120px] sm:max-w-none">
-                      {user.firstName} {user.lastName}
-                    </div>
-                  </td>
-                  <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4">
-                    <div className="text-xs sm:text-sm text-light-text-primary dark:text-dark-text-primary truncate max-w-[120px] sm:max-w-none">
-                      {user.email}
-                    </div>
-                  </td>
-                  <td className="hidden sm:table-cell px-3 sm:px-4 md:px-6 py-2 sm:py-4">
-                    <div className="text-xs sm:text-sm text-light-text-primary dark:text-dark-text-primary">
-                      {user.phoneNumber}
-                    </div>
-                  </td>
-                  <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4">
-                    <span
-                      className={`px-2 py-1 inline-flex text-[10px] sm:text-xs leading-4 sm:leading-5 font-semibold rounded-full 
-                      ${
-                        user.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
+        {loading ? (
+          <p className="text-center py-6 text-light-text-secondary dark:text-dark-text-secondary">
+            Cargando usuarios...
+          </p>
+        ) : (
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-primary-50 scrollbar-track-light-bg-secondary dark:scrollbar-track-dark-bg-secondary">
+            <table className="min-w-full divide-y divide-light-border-primary dark:divide-dark-border-primary">
+              <thead className="bg-light-bg-secondary dark:bg-dark-bg-secondary">
+                <tr>
+                  {[
+                    "Nombre",
+                    "Email",
+                    "Teléfono",
+                    "Status",
+                    "Role",
+                    "Acciones",
+                  ].map((heading, index) => (
+                    <th
+                      key={index}
+                      className="px-6 py-3 text-left text-xs font-semibold text-light-text-secondary dark:text-dark-text-secondary uppercase tracking-wider"
                     >
-                      {user.status === "active" ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
-                  <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4">
-                    <div className="flex space-x-1 sm:space-x-2">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-light-bg-primary dark:bg-dark-bg-primary divide-y divide-light-border-primary dark:divide-dark-border-primary">
+                {users.map((user) => (
+                  <motion.tr
+                    key={user.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="hover:bg-light-bg-secondary dark:hover:bg-dark-bg-secondary transition-colors duration-200"
+                  >
+                    <td className="px-6 py-4 text-light-text-primary dark:text-dark-text-primary">
+                      {user.firstName} {user.lastName}
+                    </td>
+                    <td className="px-6 py-4 text-light-text-primary dark:text-dark-text-primary">
+                      {user.email}
+                    </td>
+                    <td className="hidden sm:table-cell px-6 py-4 text-light-text-primary dark:text-dark-text-primary">
+                      {user.phoneNumber}
+                    </td>
+                    <td className="hidden sm:table-cell px-6 py-4 text-light-text-primary dark:text-dark-text-primary">
+                      {user.status}
+                    </td>
+                    <td className="hidden sm:table-cell px-6 py-4 text-light-text-primary dark:text-dark-text-primary">
+                      {user.role}
+                    </td>
+                    <td className="px-6 py-4 flex space-x-2">
                       <button
-                        onClick={() => handleEdit(user.id)}
-                        className="p-1 text-primary-50 hover:text-primary-600 transition-colors duration-200"
+                        className="p-1 rounded-full bg-warning-light dark:bg-warning-dark hover:bg-warning-dark dark:hover:bg-warning-light transition-colors duration-300"
+                        onClick={() => openEditModal(user)}
                       >
-                        <FiEdit2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <FiEdit className="w-5 h-5 text-white dark:text-gray-100" />
                       </button>
                       <button
-                        onClick={() => handleDelete(user.id)}
-                        className="p-1 text-error-light hover:text-error-dark transition-colors duration-200"
+                        className="p-1 rounded-full bg-error-light dark:bg-error-dark hover:bg-error-dark dark:hover:bg-error-light transition-colors duration-300"
+                        onClick={() => confirmDeleteUser(user)}
                       >
-                        <FiTrash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <FiTrash2 className="w-5 h-5 text-white dark:text-gray-100" />
                       </button>
-                      <button
-                        onClick={() => handleStatusToggle(user.id, user.status)}
-                        className={`p-1 transition-colors duration-200 ${
-                          user.status === "active"
-                            ? "text-error-light hover:text-error-dark"
-                            : "text-success-light hover:text-success-dark"
-                        }`}
-                      >
-                        {user.status === "active" ? (
-                          <FiX className="w-4 h-4 sm:w-5 sm:h-5" />
-                        ) : (
-                          <FiCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-                        )}
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mensaje de scroll en móviles */}
-        <div className="text-center text-xs text-light-text-secondary dark:text-dark-text-secondary py-2 md:hidden">
-          Desliza horizontalmente para ver más información
-        </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
+
+      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+          onClick={closeModal}
+          role="dialog"
+          aria-hidden={!isModalOpen}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-light-bg-primary dark:bg-dark-bg-primary p-6 rounded-lg shadow-lg w-96"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
+              ¿Eliminar usuario?
+            </h2>
+            <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-2">
+              Estás a punto de eliminar a{" "}
+              <b>
+                {selectedUser?.firstName} {selectedUser?.lastName}
+              </b>
+              . Esta acción no se puede deshacer.
+            </p>
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                className="px-4 py-2 rounded-md text-light-text-primary dark:text-dark-text-primary bg-light-bg-secondary dark:bg-dark-bg-secondary hover:bg-light-border-medium dark:hover:bg-dark-border-medium transition"
+                onClick={closeModal}
+              >
+                Cancelar
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-error-light dark:bg-error-dark text-white hover:bg-error-dark dark:hover:bg-error-light transition"
+                onClick={deleteUser}
+              >
+                Eliminar
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* MODAL DE EDICIÓN */}
+      {isEditModalOpen && selectedUser && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+          onClick={closeModal}
+          role="dialog"
+          aria-hidden={!isEditModalOpen}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-light-bg-primary dark:bg-dark-bg-primary p-6 rounded-lg shadow-lg w-96"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
+              Editar Usuario
+            </h2>
+            <form onSubmit={handleEditUser}>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                  Teléfono
+                </label>
+                <input
+                  type="text"
+                  value={selectedUser.phoneNumber}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      phoneNumber: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-light-border-primary dark:border-dark-border-primary rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                />
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                  Status
+                </label>
+                <select
+                  value={selectedUser.status}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      status: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-light-border-primary dark:border-dark-border-primary rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                >
+                  <option value="Active">Activo</option>
+                  <option value="Inactive">Inactivo</option>
+                  <option value="Suspended">Suspendido</option>
+                  <option value="PENDING_BUSINESS">Pendiente de empresa</option>
+                  <option value="PENDING_VERIFICATION">
+                    Pendiente de verificación
+                  </option>
+                </select>
+              </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
+                  Role
+                </label>
+                <select
+                  value={selectedUser.role}
+                  onChange={(e) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      role: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-light-border-primary dark:border-dark-border-primary rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                >
+                  <option value="Admin">Admin</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Support">Support</option>
+                  <option value="Customer">Customer</option>
+                </select>
+              </div>
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-md text-light-text-primary dark:text-dark-text-primary bg-light-bg-secondary dark:bg-dark-bg-secondary hover:bg-light-border-medium dark:hover:bg-dark-border-medium transition"
+                  onClick={closeModal}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-md bg-primary-light dark:bg-primary-dark text-white hover:bg-primary-dark dark:hover:bg-primary-light transition"
+                >
+                  Guardar
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

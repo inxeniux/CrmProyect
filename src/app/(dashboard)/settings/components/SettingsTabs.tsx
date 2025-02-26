@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import ProfileTab from "./ProfileTab";
 import BusinessTab from "./BusinessTab";
 import PaymentsTab from "./PaymentsTab";
@@ -10,8 +11,26 @@ type TabType = "Perfil" | "Negocio" | "Pagos" | "Diseño";
 
 export default function SettingsTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("Perfil");
+  const [userRole, setUserRole] = useState<string | null>(null);
+
   const handleTabClick = (tab: TabType) => setActiveTab(tab);
-  const tabs: TabType[] = ["Perfil", "Negocio", "Pagos", "Diseño"];
+
+  useEffect(() => {
+    const token = Cookies.get("role");
+    console.log("Token:", token);
+    if (token) {
+      try {
+        setUserRole(token);
+      } catch (error) {
+        console.error("Error al decodificar el token:", error);
+      }
+    }
+  }, []);
+
+  const tabs: TabType[] = ["Perfil", "Pagos", "Diseño"];
+  if (userRole === "Admin") {
+    tabs.splice(1, 0, "Negocio"); // Inserta "Negocio" después de "Perfil"
+  }
 
   const renderTab = () => {
     switch (activeTab) {

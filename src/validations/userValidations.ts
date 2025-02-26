@@ -6,15 +6,6 @@ export const validateEmail = (email: string) => {
   return "";
 };
 
-export const validatePassword = (password: string) => {
-  const regex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  if (!password) return "La contraseña es requerida";
-  if (!regex.test(password))
-    return "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial. Ejemplo: Abc123!@";
-  return "";
-};
-
 export const validateName = (name: string, field: "nombre" | "apellido") => {
   if (!name) return `El ${field} es requerido`;
   if (name.length < 2) return `El ${field} debe tener al menos 2 caracteres`;
@@ -29,36 +20,57 @@ export const validatePhone = (phone: string) => {
   return "";
 };
 
-export const validateBusinessId = (id: string) => {
-  if (!id) return "El ID del negocio es requerido";
+export const validateRoleUser = (roleUser: string) => {
+  if (!roleUser) return "El rol de usuario es requerido";
   return "";
 };
 
 export interface ValidationErrors {
   email?: string;
-  password?: string;
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
-  businessId?: string;
+  roleUser?: string;
 }
 
 export interface FormData {
   email: string;
-  password: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  businessId: string;
+  roleUser: string;
 }
 
 export const validateForm = (data: FormData): ValidationErrors => {
   return {
     email: validateEmail(data.email),
-    password: validatePassword(data.password),
     firstName: validateName(data.firstName, "nombre"),
     lastName: validateName(data.lastName, "apellido"),
     phoneNumber: validatePhone(data.phoneNumber),
-    businessId: validateBusinessId(data.businessId),
+    roleUser: validateRoleUser(data.roleUser),
+  };
+};
+
+// Profile Validation
+
+export interface ValidationErrorsProfile {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+}
+
+export interface FormDataProfile {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+}
+
+export const validateFormProfile = (
+  data: FormDataProfile
+): ValidationErrorsProfile => {
+  return {
+    firstName: validateName(data.firstName, "nombre"),
+    lastName: validateName(data.lastName, "apellido"),
+    phoneNumber: validatePhone(data.phoneNumber),
   };
 };
