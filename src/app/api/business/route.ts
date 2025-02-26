@@ -3,7 +3,6 @@
 import { NextResponse } from 'next/server';
 import { validateToken } from '@/lib/authToken';
 import prisma from '@/lib/prisma';
-import { uploadLogo } from '@/services/uploadMiddleware';  // Middleware de carga
 import { uploadLogoToS3 } from '@/lib/awsS3';
 
 
