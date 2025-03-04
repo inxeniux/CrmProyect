@@ -16,14 +16,95 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+
+
+
+export async function GET(request: Request): Promise<NextResponse> {
   try {
-    const clients = await prisma.client.findMany();
-    return NextResponse.json(clients);
+    // Obtener parámetros de la URL
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const pageSize = parseInt(searchParams.get('pageSize') || '10');
+    const search = searchParams.get('search') || '';
+    const status = searchParams.get('status') || undefined;
+    const priority = searchParams.get('priority') || undefined;
+    const sortBy = searchParams.get('sortBy') || 'company_name';
+    const sortOrder = searchParams.get('sortOrder') || 'asc';
+    
+    // Validar parámetros de paginación
+    const validatedPage = page > 0 ? page : 1;
+    const validatedPageSize = pageSize > 0 && pageSize <= 100 ? pageSize : 10;
+    
+    // Calcular skip para la paginación
+    const skip = (validatedPage - 1) * validatedPageSize;
+    
+    // Construir filtros
+    const where: any = {};
+    
+    // Filtro de búsqueda en múltiples campos
+    if (search) {
+      where.OR = [
+        { company_name: { contains: search, mode: 'insensitive' } },
+        { contact_name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phone_number: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+    
+    // Filtro por estado
+    if (status) {
+      where.status = status;
+    }
+    
+    // Filtro por prioridad - Manejar el enum correctamente
+    if (priority) {
+      where.priority = priority;
+    }
+
+    // Validar campo de ordenamiento para evitar inyección SQL
+    const validSortFields = [
+      'client_id', 'company_name', 'contact_name', 'email', 
+      'phone_number', 'status', 'priority', 'created_at'
+    ];
+    
+    const validatedSortBy = validSortFields.includes(sortBy) ? sortBy : 'company_name';
+    const validatedSortOrder = sortOrder === 'desc' ? 'desc' : 'asc';
+
+    // Construir objeto de ordenamiento
+    let orderBy: any = {};
+    orderBy[validatedSortBy] = validatedSortOrder;
+
+    // Consulta para contar el total de registros con los filtros aplicados
+    const totalCount = await prisma.client.count({ where });
+    
+    // Consulta principal con paginación, ordenamiento y filtros
+    const clients = await prisma.client.findMany({
+      where,
+      skip,
+      take: validatedPageSize,
+      orderBy
+    });
+    
+    // Calcular total de páginas
+    const totalPages = Math.ceil(totalCount / validatedPageSize);
+    
+    // Preparar respuesta con meta información para la paginación
+    return NextResponse.json({
+      data: clients,
+      meta: {
+        page: validatedPage,
+        pageSize: validatedPageSize,
+        totalCount,
+        totalPages,
+        hasNextPage: validatedPage < totalPages,
+        hasPrevPage: validatedPage > 1
+      }
+    });
+    
   } catch (error) {
-    console.log(error)
+    console.error('Error al recuperar clientes:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     );
   }

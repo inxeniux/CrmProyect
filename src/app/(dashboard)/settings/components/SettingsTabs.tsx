@@ -29,6 +29,7 @@ export default function SettingsTabs() {
 
   const tabs: TabType[] = ["Perfil", "Pagos", "Diseño"];
   if (userRole === "Admin") {
+
     tabs.splice(1, 0, "Negocio"); // Inserta "Negocio" después de "Perfil"
   }
 

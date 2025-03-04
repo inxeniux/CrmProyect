@@ -1,9 +1,9 @@
 // app/api/business/route.ts
-import { NextResponse } from "next/server";
-import { validateToken } from "@/lib/authToken";
-import prisma from "@/lib/prisma";
-import { uploadLogo } from "@/services/uploadMiddleware"; // Middleware de carga
-import { uploadLogoToS3 } from "@/lib/awsS3";
+import { NextResponse } from 'next/server';
+import { validateToken } from '@/lib/authToken';
+import prisma from '@/lib/prisma';
+import { uploadLogoToS3 } from '@/lib/awsS3';
+
 
 export async function POST(req: Request) {
   try {
