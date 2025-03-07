@@ -2,12 +2,21 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['encrypted-tbn0.gstatic.com'], // Agregar el dominio aquí
+    domains: [
+      "encrypted-tbn0.gstatic.com",
+      "inx-event-marte-bucket.s3.amazonaws.com",
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "inx-event-marte-bucket.s3.amazonaws.com",
+      },
+    ],
   },
   experimental: {
     serverActions: true,
-    serverComponentsExternalPackages: ['@prisma/client']
-  }
-}
+    serverComponentsExternalPackages: ["@prisma/client"],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

@@ -1,8 +1,7 @@
-
 // app/funnels/FunnelsComponent.tsx
 'use client';
 
-import {  useState } from "react";
+import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { RiDeleteBin6Line } from "react-icons/ri";
 import useSWR from 'swr';
@@ -16,9 +15,16 @@ interface Funnel {
   description: string;
 }
 
-interface FormData {
+// Renombrado para coincidir con FunnelForm
+interface FunnelFormData {
   name: string;
   description: string;
+  inputs?: {
+    id: number;
+    name: string;
+    description: string;
+    position: number;
+  }[];
   patch: boolean;
 }
 
@@ -34,9 +40,10 @@ export default function FunnelsPage() {
   const router = useRouter();
   
   const [openModal, setOpenModal] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FunnelFormData>({
     name: "",
     description: "",
+    inputs: [],
     patch: false,
   });
   const [loading, setLoading] = useState(false);
@@ -68,7 +75,7 @@ export default function FunnelsPage() {
       await mutate();
       alert('Embudo creado exitosamente!');
       setOpenModal(false);
-      setFormData({ name: "", description: "", patch: false });
+      setFormData({ name: "", description: "", inputs: [], patch: false });
     } catch (err) {
       console.error('Error al crear el embudo:', err);
       alert('Error al crear el embudo');

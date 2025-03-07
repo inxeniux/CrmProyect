@@ -2,13 +2,20 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+interface Segments {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
 export async function GET(
   req: Request, 
-  { params }: { params: { id: string } }
+  { params }: Segments
 ): Promise<NextResponse> {
   try {
+    const {id} = await params;
     const prospect = await prisma.prospect.findUnique({
-      where: { prospect_id: parseInt(params.id) }
+      where: { prospect_id: parseInt(id) }
     });
 
     if (!prospect) {

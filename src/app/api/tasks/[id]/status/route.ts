@@ -1,14 +1,20 @@
 import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server';
 
+interface Segments {
+  params: Promise<{
+    id: string;
+
+  }>;
+}
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }  // Asegurar que `id` es un string
+  { params }: Segments
 ): Promise<NextResponse> {  // Agregar `Promise<NextResponse>`
   try {
     const { status } = await request.json();
-
-    const taskId = parseInt(params.id);  // Convertir `id` a número de forma segura
+    const {id} = await params;
+    const taskId = parseInt(id);  // Convertir `id` a número de forma segura
     if (isNaN(taskId)) {
       return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
     }

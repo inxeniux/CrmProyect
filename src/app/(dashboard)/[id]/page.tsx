@@ -1,7 +1,7 @@
 // src/app/(dashboard)/prospects/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import TaskBoard from '@/components/layouts/TaskBoard';
 import { useParams } from 'next/navigation';
 import NavbarSideComponent from '@/components/layouts/NavbarSideComponent';
@@ -10,6 +10,7 @@ import OpportunityForm from '@/components/form/OpportunityForm';
 
 interface Stage {
   name: string;
+  stage_id:number;
   description: string;
 }
 
@@ -68,32 +69,28 @@ export default function ProspectsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingOportunity, setLoadingOportunity] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchProspects();
-  }, []);
-
- 
-  const fetchProspects = async () => {
+  
+  const fetchProspects = useCallback(async () => {
     try {
       const token = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('auth_token='))
-    ?.split('=')[1];
-    console.log(token)
+        .split('; ')
+        .find(row => row.startsWith('auth_token='))
+        ?.split('=')[1];
+  
+      console.log(token);
       setLoading(true);
+  
       const response = await fetch(`/api/prospects/funnel/${id}`, {
         headers: {
           'Content-Type': 'application/json',
-          // Si usas autenticación, añade el header necesario
           // 'Authorization': `Bearer ${token}`
         },
       });
-
+  
       if (!response.ok) {
         throw new Error('Error al cargar los prospectos');
       }
-
+  
       const data = await response.json();
       setTasks(data);
     } catch (err) {
@@ -102,18 +99,27 @@ export default function ProspectsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]); // id como dependencia porque se usa en la URL
+  
+
+  useEffect(() => {
+    fetchProspects();
+  }, [fetchProspects]);
+
+ 
+  
 
  
   
    const handleSubmit = async (e: React.FormEvent) => {
      e.preventDefault();
      setLoadingOportunity(true);
-     setFormData((prevState)=>({
+     setFormData((prevState) => ({
       ...prevState,
-      funnel_id: parseInt(id), 
-     }))
-     console.log(formData)
+      funnel_id: id 
+        ? parseInt(Array.isArray(id) ? id[0] : id)
+        : 0, // Asigna 0 en caso de que id sea undefined
+    }))
      try {
        const response = await fetch('/api/prospects/stages', {
          method: 'POST',

@@ -8,18 +8,21 @@ import PaymentLink from "@/components/ui/stripepayment";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-
- interface Client {
+interface Client {
   contact_name: string;
   email: string;
   phone_number: string;
   address: string;
   website: string;
 }
+
+interface Prospect {
+  Client: Client;
+}
+
 interface Task {
   prospect_id: string;
-  Client: Client;
-  prospect: string;
+  prospect: Prospect;
   stage: string;
   deal_closing_date: string;
   deal_value: string;
@@ -36,9 +39,9 @@ interface Activity {
   notes: string;
   activity_date: string;
 }
+
 interface Payment {
   email: string;
-
 }
 
 export default function DetailComponent() {
@@ -106,6 +109,7 @@ export default function DetailComponent() {
 
   if (taskLoading) return <div className="text-light-text-primary dark:text-dark-text-primary">Cargando datos del prospecto...</div>;
   if (taskError || activitiesError) return <div className="text-error-light dark:text-error-dark">Error al cargar los datos.</div>;
+  if (!task) return <div className="text-light-text-primary dark:text-dark-text-primary">No se encontraron datos del prospecto.</div>;
 
   return (
    <NavbarSideComponent
@@ -116,7 +120,7 @@ export default function DetailComponent() {
    <div className="flex min-h-screen bg-light-bg-secondary dark:bg-dark-bg-secondary p-10">
       {/* Sección del perfil */}
       <div className="w-3/4 bg-light-bg-primary dark:bg-dark-bg-primary shadow-lg rounded-lg p-6 mr-6">
-        <ProfileSection task={task?.prospect} />
+        <ProfileSection task={task} />
       </div>
 
       {/* Sección de actividades */}
@@ -126,7 +130,7 @@ export default function DetailComponent() {
           formActivity={formActivity}
           handleSubmit={handleSubmit}
         />
-         <PayActivityLog payment={task?.prospect.Client} />
+         <PayActivityLog payment={task.prospect.Client} />
         <ActivityLog activities={activities || []} />
       </div>
     </div>
@@ -139,17 +143,17 @@ function ProfileSection({ task }: { task: Task }) {
     <div className="flex">
       <div className="w-1/2 pr-4">
         <h2 className="text-xl font-semibold text-light-text-primary dark:text-dark-text-primary text-start">
-          {task.Client.contact_name}
+          {task.prospect.Client.contact_name}
         </h2>
-        <p className="text-light-text-secondary dark:text-dark-text-secondary text-start">{task.Client.email}</p>
-        <p className="text-light-text-secondary dark:text-dark-text-secondary text-start">{task.Client.phone_number}</p>
+        <p className="text-light-text-secondary dark:text-dark-text-secondary text-start">{task.prospect.Client.email}</p>
+        <p className="text-light-text-secondary dark:text-dark-text-secondary text-start">{task.prospect.Client.phone_number}</p>
 
         <div className="grid grid-cols-2 gap-4 my-6">
           <ProfileDetail label="Progreso" value={task.stage} />
           <ProfileDetail label="Día de cierre" value={task.deal_closing_date} />
           <ProfileDetail label="Valor del prospecto" value={task.deal_value} />
-          <ProfileDetail label="Dirección" value={task.Client.address} />
-          <ProfileDetail label="Sitio web" value={task.Client.website} />
+          <ProfileDetail label="Dirección" value={task.prospect.Client.address} />
+          <ProfileDetail label="Sitio web" value={task.prospect.Client.website} />
         </div>
 
         <div className="mt-6">

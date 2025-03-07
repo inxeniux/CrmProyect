@@ -17,7 +17,7 @@ interface Task {
     title: string;
     description: string;
     due_date: string;
-    status: 'Pending' | 'In Progress' | 'Completed';
+    status: 'Pending' | 'In_Progress' | 'Completed';
     priority: 'Low' | 'Medium' | 'High';
     assigned_to: string;
   }
@@ -290,7 +290,7 @@ function TaskList({ tasks, onDelete, onEdit }: TaskListProps) {
                 <span className={`px-3 py-1 rounded-full text-sm ${
                   task.status === 'Completed' 
                     ? 'bg-success/10 text-success' 
-                    : task.status === 'In Progress' 
+                    : task.status === 'In_Progress' 
                       ? 'bg-brand-accent/10 text-brand-accent' 
                       : 'bg-light-text-tertiary/10 dark:bg-dark-text-tertiary/10 text-light-text-tertiary dark:text-dark-text-tertiary'
                 }`}>

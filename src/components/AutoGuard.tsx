@@ -1,9 +1,18 @@
-// src/components/AuthGuard.tsx
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getAuthToken, decodeToken } from '@/lib/auth';
+import { JwtPayload } from 'jsonwebtoken';
+
+// Define una interfaz que extienda JwtPayload para incluir tus campos personalizados
+interface UserJwtPayload extends JwtPayload {
+  status?: string;
+  // Agrega aquí otros campos que pueda tener tu token
+  // userId?: string;
+  // email?: string;
+  // etc.
+}
 
 const PUBLIC_ROUTES = [
   '/login',
@@ -24,7 +33,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = () => {
       const token = getAuthToken();
-      const decoded = token ? decodeToken() : null;
+      const decodedToken = token ? decodeToken() : null;
+      
+      // Aseguramos que el token decodificado es del tipo correcto
+      const decoded = decodedToken as UserJwtPayload | null;
 
       // Si es una ruta pública y el token está presente y el status es 'Active', redirigir a '/funnels'
       if ((PUBLIC_ROUTES.includes(pathname) || pathname === '/registerbusiness') && decoded?.status === 'Active') {

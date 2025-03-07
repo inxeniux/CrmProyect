@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+
+interface Segments {
+  params: Promise<{
+    id: string;
+
+  }>;
+}
+
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Segments
 ): Promise<NextResponse> {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validar que el ID sea un número válido
     if (!id || isNaN(Number(id))) {

@@ -5,12 +5,14 @@ import { useState } from "react";
 interface Client {
   client_id: number;
   contact_name: string;
+  email?: string; // Opcional para que coincida con los datos de la API
 }
 
 export default function AutoCompleteClient({ onSelect }: { onSelect: (client: Client) => void }) {
   const [query, setQuery] = useState("");
   const [filteredItems, setFilteredItems] = useState<Client[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
@@ -50,7 +52,7 @@ export default function AutoCompleteClient({ onSelect }: { onSelect: (client: Cl
         setFilteredItems(data);
       }
     } catch (err) {
-      console.error("Error al buscar el embudo:", err);
+      console.error("Error al buscar el cliente:", err);
     }
   };
 
@@ -74,10 +76,8 @@ export default function AutoCompleteClient({ onSelect }: { onSelect: (client: Cl
               }`}
               onClick={() => handleSelect(item)}
             >
-             
               <h1>{item.contact_name}</h1>
-              <p  className="text-gray-600 text-sm">{item.email}</p>
-          
+              <p className="text-gray-600 text-sm">{item.email}</p>
             </li>
           ))}
         </ul>

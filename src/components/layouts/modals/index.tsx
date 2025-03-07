@@ -10,16 +10,27 @@ interface ModalFunnelProps {
   getOpportunity?: () => void;
 }
 
-interface FormData {
+// Actualizar la interfaz FormData para que coincida con lo que espera FunnelForm
+interface FunnelFormData {
   name: string;
   description: string;
+  inputs?: Array<{
+    id: number;
+    name: string;
+    description: string;
+    position: number;
+  }>;
+  patch: boolean;
 }
 
 export default function ModalFunnel({ openModal, setOpenModal }: ModalFunnelProps) {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FunnelFormData>({
     name: "",
     description: "",
+    inputs: [],
+    patch: false // Añadir la propiedad patch requerida
   });
+  
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +65,7 @@ export default function ModalFunnel({ openModal, setOpenModal }: ModalFunnelProp
       </Modal.Body>
       <Modal.Footer className="bg-white">
         <Button
-        color="orange"
+          color="orange"
           className={`bg-orange-600 text-white hover:bg-orange-500 ${loading ? 'cursor-not-allowed' : ''}`}
           onClick={!loading ? handleSubmit : undefined}
           disabled={loading}

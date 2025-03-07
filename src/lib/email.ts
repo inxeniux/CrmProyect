@@ -1,5 +1,7 @@
 // src/lib/email.ts
 import { Resend } from 'resend';
+// Importamos el tipo directamente de la biblioteca Resend
+import type { CreateEmailResponse } from 'resend';
 
 if (!process.env.RESEND_API_KEY) {
   throw new Error('RESEND_API_KEY no está configurada en las variables de entorno');
@@ -7,10 +9,11 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Interfaz para nuestra respuesta personalizada
 interface EmailResponse {
   success: boolean;
   error?: string;
-  data?: any;
+  data?: CreateEmailResponse;
 }
 
 export const emailService = {
@@ -51,9 +54,10 @@ export const emailService = {
       });
 
       return { success: true, data };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al enviar email de verificación:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      return { success: false, error: errorMessage };
     }
   },
 
@@ -104,15 +108,17 @@ export const emailService = {
       });
 
       return { success: true, data };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al enviar email de bienvenida:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      return { success: false, error: errorMessage };
     }
   },
+  
   async sendWelcomeEmailInvitation(
     email: string,
     name: string,
-    password:string,
+    password: string,
     businessName: string
   ): Promise<EmailResponse> {
     try {
@@ -163,9 +169,10 @@ export const emailService = {
       });
 
       return { success: true, data };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al enviar email de bienvenida:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      return { success: false, error: errorMessage };
     }
   }
 };
