@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import _ from 'lodash';
 
 const prisma = new PrismaClient();
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log(user.businessId)
+    console.log(user.businessId);
 
     // Generate JWT token
     const token = jwt.sign(
@@ -50,15 +51,15 @@ export async function POST(req: Request) {
         userId: user.id,
         email: user.email,
         role: user.role,
-        status:user.status,
+        status: user.status,
         businessId: user.businessId
       },
       process.env.JWT_SECRET!,
       { expiresIn: '24h' }
     );
 
-    // Remove sensitive data
-    const { password: _, ...userWithoutPassword } = user;
+     // Remove sensitive data
+    const userWithoutPassword = _.omit(user, ['password']); // Alternativa con lodash
 
     return NextResponse.json({
       message: 'Login successful',

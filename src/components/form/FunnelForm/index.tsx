@@ -1,4 +1,3 @@
-// /components/form/FunnelForm/index.tsx
 'use client';
 
 import { Dispatch, SetStateAction, useState } from "react";
@@ -11,20 +10,21 @@ interface Input {
   position: number;
 }
 
-interface FormData {
+// Renombrado para evitar conflictos y actualizado para incluir patch
+interface FunnelFormData {
   name: string;
   description: string;
   inputs?: Input[];
-}
-
-interface FunnelFormProps {
-  formData: FormData;
-  setFormData: Dispatch<SetStateAction<FormData>>;
   patch: boolean;
 }
 
+interface FunnelFormProps {
+  formData: FunnelFormData;
+  setFormData: Dispatch<SetStateAction<FunnelFormData>>;
+}
+
 export function FunnelForm({ formData, setFormData }: FunnelFormProps) {
-  const [inputs, setInputs] = useState<Input[]>([]);
+  const [inputs, setInputs] = useState<Input[]>(formData.inputs || []);
   
   const addInput = () => {
     const newInput = {
@@ -44,12 +44,16 @@ export function FunnelForm({ formData, setFormData }: FunnelFormProps) {
     updateFormInputs(updatedInputs);
   };
 
-  const updateInputValue = (id: number, value: string, property: keyof Input) => {
-    const updatedInputs = inputs.map(input => 
-      input.id === id ? {...input, [property]: value} : input
-    );
-    setInputs(updatedInputs);
-    updateFormInputs(updatedInputs);
+  // Modificar la firma de esta función para que coincida con lo que espera DynamicInput
+  const updateInputValue = (id: number, value: string, property: string) => {
+    // Verificar que la propiedad sea válida antes de actualizar
+    if (property === 'name' || property === 'description' || property === 'position') {
+      const updatedInputs = inputs.map(input => 
+        input.id === id ? {...input, [property]: value} : input
+      );
+      setInputs(updatedInputs);
+      updateFormInputs(updatedInputs);
+    }
   };
 
   const updateFormInputs = (newInputs: Input[]) => {

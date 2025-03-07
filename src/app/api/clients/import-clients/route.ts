@@ -3,6 +3,56 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import * as XLSX from 'xlsx';
 import { parse } from 'papaparse';
+import { Prisma } from '@prisma/client';
+
+// Usar el tipo de Prisma para creación de clientes
+type ClientCreateInput = Prisma.ClientCreateInput;
+
+// Para datos crudos de la importación
+interface RawClient {
+  company_name?: string;
+  companyName?: string;
+  empresa?: string;
+  contact_name?: string;
+  contactName?: string;
+  contacto?: string;
+  position?: string;
+  cargo?: string;
+  phone_number?: string;
+  phoneNumber?: string;
+  telefono?: string;
+  email?: string;
+  correo?: string;
+  website?: string;
+  sitio_web?: string;
+  sitioWeb?: string;
+  address?: string;
+  direccion?: string;
+  city?: string;
+  ciudad?: string;
+  state?: string;
+  estado?: string;
+  postal_code?: string;
+  postalCode?: string;
+  cp?: string;
+  country?: string;
+  pais?: string;
+  lead_source?: string;
+  leadSource?: string;
+  fuente?: string;
+  industry?: string;
+  industria?: string;
+  status?: string;
+  priority?: string;
+  prioridad?: string;
+  assigned_to?: string;
+  assignedTo?: string;
+  asignado?: string;
+  tags?: string;
+  etiquetas?: string;
+  comments?: string;
+  comentarios?: string;
+}
 
 // Procesar FormData para subir archivos
 export async function POST(request: Request) {
@@ -25,7 +75,7 @@ export async function POST(request: Request) {
     const fileBuffer = await file.arrayBuffer();
     const fileData = new Uint8Array(fileBuffer);
     
-    let clients = [];
+    let clients: RawClient[] = [];
 
     // Procesar según el tipo de archivo
     if (fileExtension === 'xlsx' || fileExtension === 'xls') {
@@ -33,7 +83,7 @@ export async function POST(request: Request) {
       const workbook = XLSX.read(fileData, { type: 'array' });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      clients = XLSX.utils.sheet_to_json(worksheet);
+      clients = XLSX.utils.sheet_to_json<RawClient>(worksheet);
     } 
     else if (fileExtension === 'csv') {
       // Procesar CSV
@@ -42,7 +92,7 @@ export async function POST(request: Request) {
         header: true,
         skipEmptyLines: true
       });
-      clients = result.data;
+      clients = result.data as RawClient[];
     } 
     else {
       return NextResponse.json(
@@ -80,10 +130,12 @@ export async function POST(request: Request) {
   }
 }
 
-// Función para validar y transformar los datos del cliente
-function validateAndTransformClient(rawClient: any) {
-  // Mapear los nombres de columnas del archivo a los campos del modelo
-  const client: any = {
+function validateAndTransformClient(rawClient: RawClient): ClientCreateInput {
+  // Normalizar la prioridad para Prisma
+  const priorityValue = validatePriority(rawClient.priority || rawClient.prioridad || '');
+  
+  // Crear un objeto compatible con Prisma.ClientCreateInput
+  const client: ClientCreateInput = {
     company_name: rawClient.company_name || rawClient.companyName || rawClient.empresa || '',
     contact_name: rawClient.contact_name || rawClient.contactName || rawClient.contacto || '',
     position: rawClient.position || rawClient.cargo || '',
@@ -98,7 +150,7 @@ function validateAndTransformClient(rawClient: any) {
     lead_source: rawClient.lead_source || rawClient.leadSource || rawClient.fuente || '',
     industry: rawClient.industry || rawClient.industria || '',
     status: rawClient.status || 'Prospect',
-    priority: validatePriority(rawClient.priority || rawClient.prioridad),
+    priority: priorityValue,
     assigned_to: rawClient.assigned_to || rawClient.assignedTo || rawClient.asignado || '',
     tags: rawClient.tags || rawClient.etiquetas || '',
     comments: rawClient.comments || rawClient.comentarios || ''

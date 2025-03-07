@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+interface Segments {
+  params: Promise<{
+    funnel_id: string;
+    prospect_id: string;
+  }>;
+}
+
 export async function GET(
   req: Request, 
-  { params }: { params: { funnel_id: string; prospect_id: string } }
+  { params }:Segments
 ): Promise<NextResponse> {
-  const { funnel_id, prospect_id } = params;
+  const { funnel_id, prospect_id } = await params;
 
   try {
     // Verificar que funnel_id y prospect_id estén presentes

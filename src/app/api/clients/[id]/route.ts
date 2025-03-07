@@ -1,14 +1,20 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+interface Segments {
+  params: Promise<{
+    id: string;
+  }>;
+}
 // app/api/clients/[id]/route.ts
 export async function GET(
   req: Request, 
-  { params }: { params: { id: string } }
+  { params }: Segments
 ): Promise<NextResponse> { 
   try {
+    const {id} = await params;
     const client = await prisma.client.findUnique({
-      where: { client_id: parseInt(params.id) }
+      where: { client_id: parseInt(id) }
     });
     
     if (!client) {
@@ -29,12 +35,13 @@ export async function GET(
 
 export async function PUT(
   req: Request, 
-  { params }: { params: { id: string } }
+  { params }: Segments
 ): Promise<NextResponse> { 
   try {
     const data = await req.json();
+    const {id}= await params;
     const client = await prisma.client.update({
-      where: { client_id: parseInt(params.id) },
+      where: { client_id: parseInt(id) },
       data
     });
     return NextResponse.json({ message: 'Client updated successfully', client });
@@ -49,11 +56,12 @@ export async function PUT(
 
 export async function DELETE(
   req: Request, 
-  { params }: { params: { id: string } }
+  { params }: Segments
 ): Promise<NextResponse> { 
   try {
+    const {id} = await params;
     await prisma.client.delete({
-      where: { client_id: parseInt(params.id) }
+      where: { client_id: parseInt(id) }
     });
     return NextResponse.json({ message: 'Client deleted successfully' });
   } catch (error) {

@@ -8,26 +8,34 @@ import Cookies from "js-cookie";
 import { MdDesignServices } from "react-icons/md";
 import { RiColorFilterFill } from "react-icons/ri";
 
-export default function DesignTab() {
-
-  interface BusinessFormData {
+// Define API response interface
+interface BusinessColorApiResponse {
+  updatedBusiness: {
     color1: string;
     color2: string;
     color3: string;
     createdAt: string;
     updatedAt: string;
-  }
+  };
+}
 
-  
+interface BusinessFormData {
+  color1: string;
+  color2: string;
+  color3: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
+export default function DesignTab() {
   const [formData, setFormData] = useState<BusinessFormData>({
     color1: "",
     color2: "",
     color3: "",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    
   });
+  
   const [errors, setErrors] = useState<ValidationErrorsDesign>({});
   const [isLoading, setIsLoading] = useState(false);
  
@@ -52,10 +60,17 @@ export default function DesignTab() {
         if (!response.ok)
           throw new Error("Error al obtener los datos del usuario");
 
-        const data: BusinessFormData = await response.json();
-        setFormData({ ...data.updatedBusiness, updatedAt: new Date().toISOString() });
+        const data = await response.json() as BusinessColorApiResponse;
+        
+        if (data.updatedBusiness) {
+          setFormData({ 
+            ...data.updatedBusiness, 
+            updatedAt: new Date().toISOString() 
+          });
+        }
 
-      } catch {
+      } catch (error) {
+        console.error(error);
         showToast.error("Error al obtener los datos del usuario");
       }
     };
@@ -165,12 +180,12 @@ export default function DesignTab() {
                   placeholder="Color primario"
                   value={formData.color1}
                   onChange={handleChange}
-                  className="pl-10 w-full rounded-lg text-sm md:text-base py-2 md:py-3
+                  className={`pl-10 w-full rounded-lg text-sm md:text-base py-2 md:py-3
                          bg-light-bg-input dark:bg-dark-bg-input 
                          border ${errors.color1 ? 'border-error-light' : 'border-light-border-medium dark:border-dark-border-medium'}
                          text-light-text-primary dark:text-dark-text-primary
                          focus:ring-2 focus:ring-primary-50 focus:border-transparent
-                         transition-all duration-200"
+                         transition-all duration-200`}
                 />
               </div>
               {errors.color1 && (
@@ -192,12 +207,12 @@ export default function DesignTab() {
                   placeholder="Color secundario"
                   value={formData.color2}
                   onChange={handleChange}
-                  className="pl-10 w-full rounded-lg text-sm md:text-base py-2 md:py-3
+                  className={`pl-10 w-full rounded-lg text-sm md:text-base py-2 md:py-3
                          bg-light-bg-input dark:bg-dark-bg-input 
                          border ${errors.color2 ? 'border-error-light' : 'border-light-border-medium dark:border-dark-border-medium'}
                          text-light-text-primary dark:text-dark-text-primary
                          focus:ring-2 focus:ring-primary-50 focus:border-transparent
-                         transition-all duration-200"
+                         transition-all duration-200`}
                 />
               </div>
               {errors.color2 && (
@@ -219,12 +234,12 @@ export default function DesignTab() {
                   placeholder="Color 3"
                   value={formData.color3}
                   onChange={handleChange}
-                  className="pl-10 w-full rounded-lg text-sm md:text-base py-2 md:py-3
+                  className={`pl-10 w-full rounded-lg text-sm md:text-base py-2 md:py-3
                          bg-light-bg-input dark:bg-dark-bg-input 
                          border ${errors.color3 ? 'border-error-light' : 'border-light-border-medium dark:border-dark-border-medium'}
                          text-light-text-primary dark:text-dark-text-primary
                          focus:ring-2 focus:ring-primary-50 focus:border-transparent
-                         transition-all duration-200"
+                         transition-all duration-200`}
                 />
               </div>
               {errors.color3 && (

@@ -1,5 +1,4 @@
-
-// src/app/(auth)/register/components/RegisterForm.tsx
+// src/components/form/RegisterForm/index.tsx
 'use client';
 
 import Image from 'next/image';
@@ -10,6 +9,7 @@ import { BsEye } from 'react-icons/bs';
 import { useState } from 'react';
 import Link from 'next/link';
 
+// Define the structure of input values
 interface InputValues {
   firstName: string;
   lastName: string;
@@ -19,6 +19,7 @@ interface InputValues {
   confirmPassword: string;
 }
 
+// Define the structure of validation errors
 interface Errors {
   firstName?: string;
   lastName?: string;
@@ -28,9 +29,10 @@ interface Errors {
   confirmPassword?: string;
 }
 
+// Define the component props with proper types
 interface RegisterFormProps {
-  initialData: any;
-  onSubmit: (data: any) => void;
+  initialData: InputValues;
+  onSubmit: (data: InputValues) => void;
 }
 
 export default function RegisterForm({ initialData, onSubmit }: RegisterFormProps) {
@@ -87,25 +89,26 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
     return Object.keys(errores).length === 0;
   };
   
-  const handleFocus = (field) => {
+  // Add type to field parameter
+  const handleFocus = (field: keyof InputValues) => {
     setIsFocused(prev => ({ ...prev, [field]: true }));
   };
 
-  const handleBlur = (field) => {
+  // Add type to field parameter
+  const handleBlur = (field: keyof InputValues) => {
     setIsFocused(prev => ({ ...prev, [field]: false }));
   };
 
-  const handleChange = (field, value) => {
+  // Add types to parameters
+  const handleChange = (field: keyof InputValues, value: string) => {
     setInputValues(prev => ({ ...prev, [field]: value }));
   };
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if(validarFormulario()){
       onSubmit(inputValues);
     }
-   
   };
 
   return (
@@ -396,7 +399,6 @@ export default function RegisterForm({ initialData, onSubmit }: RegisterFormProp
 
             {/* Botón de registro */}
             <button
-            
               type="submit"
               className="w-full bg-primary-50 text-white py-3 rounded
                 hover:bg-primary-600 active:bg-primary-700

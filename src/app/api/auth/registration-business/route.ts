@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     const registrationData = await request.json();
     console.log(registrationData)
-    const result = await RegistrationService.completeBuisnessRegistration(registrationData);
+    const result = await RegistrationService.completeBusinessRegistration(registrationData);
     return NextResponse.json(result);
   } catch (error) {
     console.log(error)

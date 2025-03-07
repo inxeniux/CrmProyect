@@ -1,6 +1,7 @@
 // app/api/clients/route.ts
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { Clients_priority } from '@prisma/client';
 
 export async function POST(req: Request) {
   try {
@@ -30,17 +31,32 @@ export async function GET(request: Request): Promise<NextResponse> {
     const priority = searchParams.get('priority') || undefined;
     const sortBy = searchParams.get('sortBy') || 'company_name';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
-    
+
     // Validar parámetros de paginación
     const validatedPage = page > 0 ? page : 1;
     const validatedPageSize = pageSize > 0 && pageSize <= 100 ? pageSize : 10;
-    
+
     // Calcular skip para la paginación
     const skip = (validatedPage - 1) * validatedPageSize;
-    
+
+    // Definir el tipo para las condiciones de búsqueda con Prisma
+    type SearchCondition = {
+      contains: string;
+      mode: 'insensitive' | 'sensitive';
+    };
+
     // Construir filtros
-    const where: any = {};
-    
+    const where: {
+      OR?:  { 
+        company_name?: SearchCondition;
+        contact_name?: SearchCondition;
+        email?: SearchCondition;
+        phone_number?: SearchCondition;
+      }[];
+      status?: string;
+      priority?: Clients_priority;
+    } = {};
+
     // Filtro de búsqueda en múltiples campos
     if (search) {
       where.OR = [
@@ -50,33 +66,31 @@ export async function GET(request: Request): Promise<NextResponse> {
         { phone_number: { contains: search, mode: 'insensitive' } }
       ];
     }
-    
+
     // Filtro por estado
     if (status) {
       where.status = status;
     }
-    
+
     // Filtro por prioridad - Manejar el enum correctamente
-    if (priority) {
-      where.priority = priority;
-    }
+    if (priority && Object.values(Clients_priority).includes(priority as Clients_priority)) { where.priority = priority as Clients_priority; }
 
     // Validar campo de ordenamiento para evitar inyección SQL
     const validSortFields = [
-      'client_id', 'company_name', 'contact_name', 'email', 
+      'client_id', 'company_name', 'contact_name', 'email',
       'phone_number', 'status', 'priority', 'created_at'
     ];
-    
+
     const validatedSortBy = validSortFields.includes(sortBy) ? sortBy : 'company_name';
     const validatedSortOrder = sortOrder === 'desc' ? 'desc' : 'asc';
 
     // Construir objeto de ordenamiento
-    let orderBy: any = {};
+    const orderBy: Record<string, 'asc' | 'desc'> = {};
     orderBy[validatedSortBy] = validatedSortOrder;
 
     // Consulta para contar el total de registros con los filtros aplicados
     const totalCount = await prisma.client.count({ where });
-    
+
     // Consulta principal con paginación, ordenamiento y filtros
     const clients = await prisma.client.findMany({
       where,
@@ -84,10 +98,10 @@ export async function GET(request: Request): Promise<NextResponse> {
       take: validatedPageSize,
       orderBy
     });
-    
+
     // Calcular total de páginas
     const totalPages = Math.ceil(totalCount / validatedPageSize);
-    
+
     // Preparar respuesta con meta información para la paginación
     return NextResponse.json({
       data: clients,
@@ -100,7 +114,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         hasPrevPage: validatedPage > 1
       }
     });
-    
+
   } catch (error) {
     console.error('Error al recuperar clientes:', error);
     return NextResponse.json(

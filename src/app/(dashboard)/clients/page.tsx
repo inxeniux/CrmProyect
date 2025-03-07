@@ -1,7 +1,7 @@
 // app/clients/page.tsx
 'use client';
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -93,14 +93,8 @@ export default function ClientPage() {
   const selectedFile = event.target.files?.[0] || null;
   setFile(selectedFile);
  };
-
- // Cargar datos
- useEffect(() => {
-  fetchClients();
- }, [meta.page, meta.pageSize, search, status, priority, sortBy, sortOrder]);
-
- // Función para obtener clientes con paginación y filtros
- const fetchClients = async () => {
+// Función para obtener clientes con paginación y filtros
+const fetchClients = useCallback(async () => {
   setIsLoading(true);
   try {
     // Construir URL con parámetros
@@ -110,18 +104,18 @@ export default function ClientPage() {
       sortBy,
       sortOrder
     });
-    
+
     // Agregar filtros opcionales
     if (search) params.append('search', search);
     if (status) params.append('status', status);
     if (priority) params.append('priority', priority);
-    
+
     const response = await fetch(`/api/clients?${params.toString()}`);
-    
+
     if (!response.ok) {
       throw new Error('Error al cargar clientes');
     }
-    
+
     const result = await response.json();
     setData(result.data);
     setMeta(result.meta);
@@ -131,7 +125,13 @@ export default function ClientPage() {
   } finally {
     setIsLoading(false);
   }
- };
+}, [meta.page, meta.pageSize, search, status, priority, sortBy, sortOrder]); // Dependencias necesarias
+
+// Cargar datos
+useEffect(() => {
+  fetchClients();
+}, [fetchClients]); // Ahora es una dependencia estable
+
 
  // Manejadores de paginación
  const handleFirstPage = () => setMeta(prev => ({ ...prev, page: 1 }));

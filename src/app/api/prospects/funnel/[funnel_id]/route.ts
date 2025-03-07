@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+
+interface Segments {
+  params: Promise<{
+    funnel_id: string;
+  }>;
+}
+
 export async function GET(
   req: NextRequest,
-  { params }: { params: { funnel_id?: string } }
+  { params }:Segments
 ): Promise<NextResponse> {
-  const funnelId = params?.funnel_id;
+  const {funnel_id} = await params;
+  const funnelId = funnel_id;
 
   // Validar que funnel_id esté presente y sea un número válido
   if (!funnelId || isNaN(Number(funnelId))) {

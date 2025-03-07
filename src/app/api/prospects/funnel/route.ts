@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+
+interface Segments {
+  params: Promise<{
+    id: string;
+  }>;
+}
 // Crear un nuevo prospecto
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
@@ -22,10 +28,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 // Actualizar un prospecto
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Segments
 ): Promise<NextResponse> {
   try {
-    const { id } = params;
+    const { id } = await params;
     const data = await req.json();
 
     // Validar ID y datos de entrada
@@ -51,10 +57,10 @@ export async function PUT(
 // Eliminar un prospecto
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: Segments
 ): Promise<NextResponse> {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validar ID antes de intentar eliminar
     if (!id || isNaN(Number(id))) {

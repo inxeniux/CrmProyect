@@ -8,6 +8,7 @@ export interface PreRegisterData {
   password: string;
   firstName: string;
   lastName: string;
+  username:string;
 }
 
 export interface BusinessData {
@@ -38,8 +39,7 @@ export class RegistrationService {
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
-          { email },
-          { username: email } // Usando email como username temporal
+          { email }
         ]
       }
     });
@@ -57,7 +57,6 @@ export class RegistrationService {
       const user = await tx.user.create({
         data: {
           email,
-          username: email, // Temporal, se puede actualizar después
           password: hashedPassword,
           firstName,
           lastName,
