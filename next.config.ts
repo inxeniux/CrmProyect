@@ -1,12 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    // La opción serverActions debe ser un objeto, no un booleano
-    // Se elimina serverComponentsExternalPackages que fue movido
+    serverActions: {
+      allowedOrigins: ["localhost:3000", "your-production-domain.com"],
+    },
   },
-  // Usar la nueva ubicación para serverExternalPackages
   serverExternalPackages: [
-    // Añadir aquí los paquetes necesarios
+    "aws-sdk",
+    "bcrypt",
+    "bcryptjs",
+    "mysql2",
+    "node-cron",
   ],
   images: {
     domains: [
