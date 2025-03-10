@@ -6,8 +6,9 @@ import ProfileTab from "./ProfileTab";
 import BusinessTab from "./BusinessTab";
 import PaymentsTab from "./PaymentsTab";
 import DesignTab from "./DesignTab";
+import RolesTab from "./RolesTab";
 
-type TabType = "Perfil" | "Negocio" | "Pagos" | "Diseño";
+type TabType = "Perfil" | "Negocio" | "Pagos" | "Diseño" | "Gestión de roles";
 
 export default function SettingsTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("Perfil");
@@ -29,8 +30,8 @@ export default function SettingsTabs() {
 
   const tabs: TabType[] = ["Perfil", "Pagos", "Diseño"];
   if (userRole === "Admin") {
-
     tabs.splice(1, 0, "Negocio"); // Inserta "Negocio" después de "Perfil"
+    tabs.push("Gestión de roles"); // Agrega "Gestión de roles" al final
   }
 
   const renderTab = () => {
@@ -43,6 +44,8 @@ export default function SettingsTabs() {
         return <PaymentsTab />;
       case "Diseño":
         return <DesignTab />;
+      case "Gestión de roles":
+        return <RolesTab />;
       default:
         return <ProfileTab />;
     }
