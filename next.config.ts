@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  experimental: {
+    // La opción serverActions debe ser un objeto, no un booleano
+    // Se elimina serverComponentsExternalPackages que fue movido
+  },
+  // Usar la nueva ubicación para serverExternalPackages
+  serverExternalPackages: [
+    // Añadir aquí los paquetes necesarios
+  ],
   images: {
     domains: [
+      "localhost",
       "encrypted-tbn0.gstatic.com",
       "inx-event-marte-bucket.s3.amazonaws.com",
     ],
@@ -13,10 +21,6 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    serverActions: true,
-    serverComponentsExternalPackages: ["@prisma/client"],
-  },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

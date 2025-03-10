@@ -65,9 +65,9 @@ model Business {
   website     String?   @db.VarChar(255)
   industry    String?   @db.VarChar(50)
   logo        String?   @db.VarChar(255)
-  color1      String?   @db.VarChar(45)
-  color2      String?   @db.VarChar(45)
-  color3      String?   @db.VarChar(45)
+  color1      String?   @default("#ffffff") @db.VarChar(45)
+  color2      String?   @default("#000000") @db.VarChar(45)
+  color3      String?   @default("#cccccc") @db.VarChar(45)
   createdAt   DateTime? @default(now()) @db.Timestamp(0)
   updatedAt   DateTime? @default(now()) @db.Timestamp(0)
   User        User[]
