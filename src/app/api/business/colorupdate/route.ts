@@ -12,7 +12,7 @@ export async function PUT(req: Request) {
     const { color1, color2, color3 } = await req.json();
 
     const updatedBusiness = await prisma.business.update({
-      where: { id: businessId },
+      where: { id: parseInt(businessId as unknown as string) },
       data: {
         color1: color1 || undefined,
         color2: color2 || undefined,
@@ -22,7 +22,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(
       {
-        message: "Busines scolors updated successfully",
+        message: "Business colors updated successfully",
         business: updatedBusiness,
       },
       { status: 200 }
@@ -44,7 +44,7 @@ export async function GET(req: Request) {
     }
 
     const updatedBusiness = await prisma.business.findUnique({
-      where: { id: businessId },
+      where: { id: parseInt(businessId as unknown as string) },
     });
 
     return NextResponse.json({ updatedBusiness }, { status: 200 });
@@ -70,11 +70,13 @@ export async function POST(req: Request) {
     }
 
     const updatedBusiness = await prisma.business.update({
-      where: { id: businessId },
+      where: {
+        id: typeof businessId === "string" ? parseInt(businessId) : businessId,
+      },
       data: {
-        color1,
-        color2,
-        color3,
+        color1: color1 || undefined,
+        color2: color2 || undefined,
+        color3: color3 || undefined,
       },
     });
 
