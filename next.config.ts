@@ -1,30 +1,3 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    serverActions: {
-      allowedOrigins: ["localhost:3000", "your-production-domain.com"],
-    },
-  },
-  serverExternalPackages: [
-    "aws-sdk",
-    "bcrypt",
-    "bcryptjs",
-    "mysql2",
-    "node-cron",
-  ],
-  images: {
-    domains: [
-      "localhost",
-      "encrypted-tbn0.gstatic.com",
-      "inx-event-marte-bucket.s3.amazonaws.com",
-    ],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "inx-event-marte-bucket.s3.amazonaws.com",
-      },
-    ],
-  },
-};
-
-export default nextConfig;
+// Este archivo debe eliminarse o renombrarse a next.config.mjs si quieres mantenerlo
+// Next.js espera un archivo next.config.js en CommonJS
+// Se ha creado un archivo next.config.js con la configuración correcta
