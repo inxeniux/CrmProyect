@@ -2,10 +2,11 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      allowedOrigins: ["localhost:3000"],
+      allowedOrigins: ["*"], // Permitir todas las solicitudes
     },
   },
-  serverExternalPackages: [
+  serverComponentsExternalPackages: [
+    // Cambio en la opción de Next.js 15+
     "aws-sdk",
     "bcrypt",
     "bcryptjs",
@@ -13,24 +14,23 @@ const nextConfig = {
     "node-cron",
   ],
   images: {
-    domains: [
-      "localhost",
-      "encrypted-tbn0.gstatic.com",
-      "inx-event-marte-bucket.s3.amazonaws.com",
-    ],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "inx-event-marte-bucket.s3.amazonaws.com",
       },
+      {
+        protocol: "https",
+        hostname: "encrypted-tbn0.gstatic.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
     ],
   },
-  // Desactivar la compresión del output para ayudar con el problema de despliegue
-  output: "standalone",
   reactStrictMode: true,
-  swcMinify: true,
-  // Asegúrate de que no hay configuraciones incorrectas que puedan afectar el routing
-  // Añade cualquier otra configuración necesaria aquí
+  // output: "standalone", // Prueba desactivándolo si sigue el error
 };
 
 module.exports = nextConfig;
