@@ -11,12 +11,20 @@ export default function PublicLayout({
       <nav className="bg-white shadow-sm p-4">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="font-bold text-xl">CRM Project</h1>
-          <Link href="/login" passHref>
-            <a className="text-blue-500 hover:text-blue-600 mr-4">Login</a>
-          </Link>
-          <Link href="/register" passHref>
-            <a className="text-blue-500 hover:text-blue-600">Register</a>
-          </Link>
+          <div>
+            <Link
+              href="/login"
+              className="text-blue-500 hover:text-blue-600 mr-4"
+            >
+              Login
+            </Link>
+            <Link
+              href="/register"
+              className="text-blue-500 hover:text-blue-600"
+            >
+              Register
+            </Link>
+          </div>
         </div>
       </nav>
       <main>{children}</main>

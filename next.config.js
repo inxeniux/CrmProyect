@@ -27,6 +27,10 @@ const nextConfig = {
   },
   // Desactivar la compresión del output para ayudar con el problema de despliegue
   output: "standalone",
+  reactStrictMode: true,
+  swcMinify: true,
+  // Asegúrate de que no hay configuraciones incorrectas que puedan afectar el routing
+  // Añade cualquier otra configuración necesaria aquí
 };
 
 module.exports = nextConfig;
