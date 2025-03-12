@@ -1,5 +1,3 @@
-"use client";
-
 import NavbarSideComponent from "@/components/layouts/NavbarSideComponent";
 import SettingsTabs from "./components/SettingsTabs";
 

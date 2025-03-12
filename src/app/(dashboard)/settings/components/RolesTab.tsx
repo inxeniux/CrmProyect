@@ -457,8 +457,8 @@ const RolesTab = () => {
   };
 
   return (
-    <div className="p-6 bg-light-bg-primary dark:bg-dark-bg-primary text-light-text-primary dark:text-white rounded-lg">
-      <h2 className="text-xl font-bold mb-4 flex items-center">
+    <div className="p-2 sm:p-4 md:p-6 bg-light-bg-primary dark:bg-dark-bg-primary text-light-text-primary dark:text-white rounded-lg">
+      <h2 className="text-lg sm:text-xl font-bold mb-4 flex items-center">
         <FaUsersCog className="mr-2 text-primary-50" />
         Configuración de Roles y Usuarios
       </h2>
@@ -466,9 +466,9 @@ const RolesTab = () => {
       {/* Mensaje de alerta */}
       <MessageAlert />
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
         {/* Card izquierda */}
-        <div className="flex-1 bg-light-bg-secondary dark:bg-dark-bg-secondary rounded-lg p-4 shadow-md">
+        <div className="w-full lg:w-1/2 bg-light-bg-secondary dark:bg-dark-bg-secondary rounded-lg p-3 sm:p-4 shadow-md">
           <div className="mb-6">
             <h3 className="font-semibold border-b border-light-border-light dark:border-dark-border-light pb-2 mb-3 flex items-center">
               <FaUserTag className="mr-2 text-primary-50" />
@@ -514,72 +514,77 @@ const RolesTab = () => {
               />
             </div>
 
-            <div className="max-h-64 overflow-auto rounded-md border border-light-border-medium dark:border-dark-border-medium">
-              <table className="w-full">
-                <thead className="sticky top-0">
-                  <tr className="bg-light-bg-input dark:bg-dark-bg-input text-light-text-secondary dark:text-gray-300">
-                    <th className="p-2 text-left">Correo</th>
-                    <th className="p-2 text-left">Rol</th>
-                    <th className="p-2 text-center">Estado</th>
-                    <th className="p-2 text-center">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-light-border-light dark:divide-dark-border-light">
-                  {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user, index) => (
-                      <tr
-                        key={index}
-                        className="border-t border-light-border-light dark:border-dark-border-light hover:bg-light-bg-input dark:hover:bg-dark-bg-input transition-colors"
-                      >
-                        <td className="p-2">
-                          <div className="flex items-center gap-2">
-                            <FaEnvelope className="text-gray-400" />
-                            {user.email}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100 rounded-full text-xs">
-                            {user.role}
-                          </span>
-                        </td>
-                        <td className="p-2 text-center">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs ${
-                              user.status === "Activo"
-                                ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
-                            }`}
-                          >
-                            {user.status}
-                          </span>
-                        </td>
-                        <td className="p-2 text-center">
-                          <button
-                            onClick={() => handleRemoveUser(user.email)}
-                            className="p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900 rounded-full"
-                            title="Eliminar usuario"
-                          >
-                            <FaTrash />
-                          </button>
+            <div className="overflow-x-auto">
+              <div className="max-h-64 overflow-auto rounded-md border border-light-border-medium dark:border-dark-border-medium">
+                <table className="w-full min-w-[500px]">
+                  <thead className="sticky top-0">
+                    <tr className="bg-light-bg-input dark:bg-dark-bg-input text-light-text-secondary dark:text-gray-300">
+                      <th className="p-2 text-left">Correo</th>
+                      <th className="p-2 text-left">Rol</th>
+                      <th className="p-2 text-center">Estado</th>
+                      <th className="p-2 text-center">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-light-border-light dark:divide-dark-border-light">
+                    {filteredUsers.length > 0 ? (
+                      filteredUsers.map((user, index) => (
+                        <tr
+                          key={index}
+                          className="border-t border-light-border-light dark:border-dark-border-light hover:bg-light-bg-input dark:hover:bg-dark-bg-input transition-colors"
+                        >
+                          <td className="p-2">
+                            <div className="flex items-center gap-2">
+                              <FaEnvelope className="text-gray-400" />
+                              {user.email}
+                            </div>
+                          </td>
+                          <td className="p-2">
+                            <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100 rounded-full text-xs">
+                              {user.role}
+                            </span>
+                          </td>
+                          <td className="p-2 text-center">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                user.status === "Activo"
+                                  ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
+                              }`}
+                            >
+                              {user.status}
+                            </span>
+                          </td>
+                          <td className="p-2 text-center">
+                            <button
+                              onClick={() => handleRemoveUser(user.email)}
+                              className="p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900 rounded-full"
+                              title="Eliminar usuario"
+                            >
+                              <FaTrash />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={4}
+                          className="p-4 text-center text-gray-500"
+                        >
+                          No se encontraron usuarios con la búsqueda actual
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className="p-4 text-center text-gray-500">
-                        No se encontraron usuarios con la búsqueda actual
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <div className="mt-6 text-center">
+          <div className="mt-4 sm:mt-6">
             <button
               onClick={handleSaveChanges}
-              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded text-white text-lg flex items-center justify-center mx-auto transition-colors"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 px-4 sm:px-6 py-2 rounded text-white text-base sm:text-lg flex items-center justify-center mx-auto transition-colors"
             >
               <FaSave className="mr-2" />
               Guardar y continuar
@@ -588,15 +593,15 @@ const RolesTab = () => {
         </div>
 
         {/* Card derecha */}
-        <div className="flex-1 bg-light-bg-secondary dark:bg-dark-bg-secondary rounded-lg p-4 shadow-md">
-          <div className="mb-6">
+        <div className="w-full lg:w-1/2 bg-light-bg-secondary dark:bg-dark-bg-secondary rounded-lg p-3 sm:p-4 shadow-md">
+          <div className="mb-4 sm:mb-6">
             <h3 className="font-semibold border-b border-light-border-light dark:border-dark-border-light pb-2 mb-3 flex items-center">
               <FaUsersCog className="mr-2 text-primary-50" />
               Roles disponibles
             </h3>
 
             <div className="mb-4">
-              <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {roles.map((role) => (
                   <div
                     key={role.id}
@@ -695,12 +700,12 @@ const RolesTab = () => {
             </div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <h3 className="font-semibold border-b border-light-border-light dark:border-dark-border-light pb-2 mb-3 flex items-center">
               <FaUserPlus className="mr-2 text-primary-50" />
               Invitar usuarios
             </h3>
-            <div className="bg-light-bg-primary dark:bg-dark-bg-primary p-3 rounded-lg border border-light-border-light dark:border-dark-border-light">
+            <div className="bg-light-bg-primary dark:bg-dark-bg-primary p-2 sm:p-3 rounded-lg border border-light-border-light dark:border-dark-border-light">
               <div className="flex flex-col gap-3 mt-2">
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -714,7 +719,7 @@ const RolesTab = () => {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <div className="relative flex-1">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <FaUserTag className="text-gray-400" />
@@ -734,7 +739,7 @@ const RolesTab = () => {
                   <button
                     onClick={handleInviteUser}
                     disabled={!email.trim()}
-                    className={`bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white whitespace-nowrap flex items-center transition-colors ${
+                    className={`w-full sm:w-auto bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white whitespace-nowrap flex items-center justify-center transition-colors ${
                       !email.trim() ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   >
@@ -743,7 +748,7 @@ const RolesTab = () => {
                   </button>
                 </div>
               </div>
-              <p className="text-sm text-light-text-secondary dark:text-gray-400 mt-2">
+              <p className="text-xs sm:text-sm text-light-text-secondary dark:text-gray-400 mt-2">
                 Se enviará una invitación al correo electrónico proporcionado
                 con instrucciones para acceder al sistema.
               </p>
