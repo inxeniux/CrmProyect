@@ -89,6 +89,7 @@ export class RegistrationService {
         message: 'Código de verificación enviado correctamente'
       };
     } catch (error) {
+      console.log(error)
       throw error;
     }
   }

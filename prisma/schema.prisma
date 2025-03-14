@@ -19,9 +19,13 @@ model User {
   status      User_status? @default(Active)
   createdAt   DateTime?    @default(now()) @db.Timestamp(0)
   updatedAt   DateTime?    @default(now()) @updatedAt @db.Timestamp(0)
+  roleId      Int?
+  role_id     Int?
   Business    Business?    @relation(fields: [businessId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_ibfk_1")
+  roles       roles?       @relation(fields: [role_id], references: [id], onUpdate: NoAction, map: "user_ibfk_2")
 
   @@index([businessId], map: "businessId")
+  @@index([role_id], map: "role_id")
 }
 
 model Activities {
@@ -36,26 +40,6 @@ model Activities {
   @@index([prospect_id], map: "fk_prospect_id")
 }
 
-model ScheduledEmail {
-  id            Int                       @id @default(autoincrement())
-  subject       String
-  body          String                    @db.Text
-  scheduledTime DateTime
-  status        String
-  createdAt     DateTime                  @default(now())
-  updatedAt     DateTime                  @updatedAt
-  recipients    ScheduledEmailRecipient[]
-}
-
-model ScheduledEmailRecipient {
-  id               Int            @id @default(autoincrement())
-  email            String
-  scheduledEmailId Int
-  scheduledEmail   ScheduledEmail @relation(fields: [scheduledEmailId], references: [id], onDelete: Cascade)
-
-  @@index([scheduledEmailId], map: "ScheduledEmailRecipient_scheduledEmailId_fkey")
-}
-
 model Business {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar(100)
@@ -65,11 +49,11 @@ model Business {
   website     String?   @db.VarChar(255)
   industry    String?   @db.VarChar(50)
   logo        String?   @db.VarChar(255)
-  color1      String?   @default("#ffffff") @db.VarChar(45)
-  color2      String?   @default("#000000") @db.VarChar(45)
-  color3      String?   @default("#cccccc") @db.VarChar(45)
   createdAt   DateTime? @default(now()) @db.Timestamp(0)
   updatedAt   DateTime? @default(now()) @db.Timestamp(0)
+  color1      String?   @db.VarChar(100)
+  color2      String?   @db.VarChar(100)
+  color3      String?   @db.VarChar(100)
   User        User[]
 }
 
@@ -135,15 +119,6 @@ model Prospect {
   @@index([funnel_id], map: "funnel_id")
 }
 
-model EmailTemplate {
-  template_id Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255)
-  businessId  Int?
-  content     String   @db.Text
-  created_at  DateTime @default(now()) @db.Timestamp(0)
-  updated_at  DateTime @default(now()) @db.Timestamp(0)
-}
-
 model Task {
   task_id     Int             @id @default(autoincrement())
   client_id   Int?
@@ -174,6 +149,35 @@ model EmailVerification {
   @@index([email])
   @@index([code])
   @@map("email_verifications")
+}
+
+model permissions {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(100)
+  description      String?            @db.Text
+  createdAt        DateTime?          @default(now()) @db.Timestamp(0)
+  updatedAt        DateTime?          @default(now()) @db.Timestamp(0)
+  role_permissions role_permissions[]
+}
+
+model role_permissions {
+  role_id       Int
+  permission_id Int
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_ibfk_1")
+  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "role_permissions_ibfk_2")
+
+  @@id([role_id, permission_id])
+  @@index([permission_id], map: "permission_id")
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(100)
+  description      String?            @db.Text
+  createdAt        DateTime?          @default(now()) @db.Timestamp(0)
+  updatedAt        DateTime?          @default(now()) @db.Timestamp(0)
+  User             User[]
+  role_permissions role_permissions[]
 }
 
 enum Tasks_status {

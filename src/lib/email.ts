@@ -23,7 +23,7 @@ export const emailService = {
   ): Promise<EmailResponse> {
     try {
       const data = await resend.emails.send({
-        from: 'Niux CRM <hola@knowmeapp.com>',
+        from: 'Niux CRM <onboarding@resend.dev>',
         to: email,
         subject: 'Verifica tu cuenta - Niux CRM',
         html: `
@@ -53,9 +53,10 @@ export const emailService = {
         `
       });
 
+      console.log(data)
       return { success: true, data };
     } catch (error: unknown) {
-      console.error('Error al enviar email de verificación:', error);
+      console.log('Error al enviar email de verificación:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       return { success: false, error: errorMessage };
     }
@@ -68,7 +69,7 @@ export const emailService = {
   ): Promise<EmailResponse> {
     try {
       const data = await resend.emails.send({
-        from: 'Niux CRM <hola@knowmeapp.com>',
+        from: 'Niux CRM <onboarding@resend.dev>',
         to: email,
         subject: '¡Bienvenido a Niux CRM!',
         html: `
@@ -123,7 +124,7 @@ export const emailService = {
   ): Promise<EmailResponse> {
     try {
       const data = await resend.emails.send({
-        from: 'Niux CRM <hola@knowmeapp.com>',
+        from: 'Niux CRM <onboarding@resend.dev>',
         to: email,
         subject: '¡Bienvenido a Niux CRM!',
         html: `
