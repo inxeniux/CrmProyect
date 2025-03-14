@@ -2,12 +2,8 @@ import { useState } from "react";
 import {
   FaPlus,
   FaTrash,
-  FaUserPlus,
   FaUsersCog,
   FaUserTag,
-  FaClipboardList,
-  FaPaperPlane,
-  FaSave,
   FaLock,
   FaTasks,
   FaChartBar,
@@ -26,11 +22,9 @@ import {
   FaUserFriends,
   FaUserShield,
   FaCheck,
-  FaEnvelope,
   FaExclamationTriangle,
   FaEye,
   FaTimes,
-  FaSearch,
   FaCheckCircle,
 } from "react-icons/fa";
 
@@ -69,21 +63,31 @@ const RolesTab = () => {
 
   // Nuevos permisos disponibles
   const [permissions, setPermissions] = useState({
-    dashboard: true,
-    createTasks: false,
-    editTasks: false,
-    deleteTasks: false,
-    accessReports: false,
-    generateReports: false,
-    accessDirectory: false,
-    addContacts: false,
-    deleteContacts: false,
-    accessCalendar: false,
-    createEvents: false,
-    deleteEvents: false,
-    accessUsersList: false,
-    manageUserRoles: false,
-    manageUsers: false,
+        dashboard: false,
+        crear_prospectos: false,
+        ver_prospectos: false,
+        editar_prospectos: false,
+        ver_clientes: false,
+        crear_clientes: false,
+        editar_clientes: false,
+        eliminar_clientes: false,
+        enviar_mensajeria_whatsapp: false,
+        enviar_mensajeria_email: false,
+        ver_tareas: false,
+        asignar_tareas: false,
+        marcar_tarea_como_completada: false,
+        gestionar_pasarela_pagos: false,
+        ver_pasarela_pagos: false,
+        configurar_automatizaciones: false,
+        ver_automatizaciones: false,
+        ejecutar_automatizacion: false,
+        modificar_automatizaciones: false,
+        borrar_automatizaciones: false,
+        ver_reportes: false,
+        generar_reportes: false,
+        ver_historial_de_pagos: false,
+        gestionar_integracion_whatsapp: false,
+        gestionar_integracion_email: false,
   });
 
   const [activeTab, setActiveTab] = useState("general");
@@ -96,20 +100,30 @@ const RolesTab = () => {
         .map(([name]) => {
           const permissionLabels = {
             dashboard: "Acceder al dashboard",
-            createTasks: "Crear tareas",
-            editTasks: "Editar tareas",
-            deleteTasks: "Eliminar tareas",
-            accessReports: "Acceder a reportes",
-            generateReports: "Generar reportes",
-            accessDirectory: "Acceder al directorio",
-            addContacts: "Agregar contactos",
-            deleteContacts: "Eliminar contactos",
-            accessCalendar: "Acceder al calendario",
-            createEvents: "Crear eventos de calendario",
-            deleteEvents: "Eliminar eventos de calendario",
-            accessUsersList: "Acceder a la lista de usuarios",
-            manageUserRoles: "Gestión de roles de usuario",
-            manageUsers: "Gestión de usuarios",
+            crear_prospectos: "Crear prospectos",
+            ver_prospectos: "Ver prospectos",
+            editar_prospectos: "Editar prospectos",
+            ver_clientes: "Ver clientes",
+            crear_clientes: "Crear clientes",
+            editar_clientes: "Editar clientes",
+            eliminar_clientes: "Eliminar clientes",
+            enviar_mensajeria_whatsapp: "Enviar whatsapp",
+            enviar_mensajeria_email: "Enviar email",
+            ver_tareas: "Ver tareas",
+            asignar_tareas: "Asignar tareas",
+            marcar_tarea_como_completada: "Tarea como completada",
+            gestionar_pasarela_pagos: "Gestion pasarela",
+            ver_pasarela_pagos: "Ver pagos",
+            configurar_automatizaciones: "Automatizaiones",
+            ver_automatizaciones: "Ver automataciones",
+            ejecutar_automatizacion: "Ejecutar automatizaciones",
+            modificar_automatizaciones: "Editar automatizacion",
+            borrar_automatizaciones: "Borrar automatizacion",
+            ver_reportes: "Gestión de usuarios",
+            generar_reportes: "Gestión de usuarios",
+            ver_historial_de_pagos: "Historial de pagos",
+            gestionar_integracion_whatsapp: "Integracion con whatsapp",
+            gestionar_integracion_email: "Gestión de email",
           };
           return permissionLabels[name as keyof typeof permissionLabels];
         });
@@ -122,25 +136,37 @@ const RolesTab = () => {
           permissions: activePermissions.length > 0 ? activePermissions : [],
         },
       ]);
+
+      console.log(permissions)
       setNewRole("");
 
       // Resetear permisos
       setPermissions({
         dashboard: true,
-        createTasks: false,
-        editTasks: false,
-        deleteTasks: false,
-        accessReports: false,
-        generateReports: false,
-        accessDirectory: false,
-        addContacts: false,
-        deleteContacts: false,
-        accessCalendar: false,
-        createEvents: false,
-        deleteEvents: false,
-        accessUsersList: false,
-        manageUserRoles: false,
-        manageUsers: false,
+        crear_prospectos: true,
+        ver_prospectos: true,
+        editar_prospectos: true,
+        ver_clientes: true,
+        crear_clientes: true,
+        editar_clientes: true,
+        eliminar_clientes: true,
+        enviar_mensajeria_whatsapp: true,
+        enviar_mensajeria_email: true,
+        ver_tareas: true,
+        asignar_tareas: true,
+        marcar_tarea_como_completada: true,
+        gestionar_pasarela_pagos: true,
+        ver_pasarela_pagos: true,
+        configurar_automatizaciones: true,
+        ver_automatizaciones: true,
+        ejecutar_automatizacion: true,
+        modificar_automatizaciones: true,
+        borrar_automatizaciones: true,
+        ver_reportes: true,
+        generar_reportes: true,
+        ver_historial_de_pagos: true,
+        gestionar_integracion_whatsapp: true,
+        gestionar_integracion_email: true,
       });
     }
   };
@@ -287,20 +313,30 @@ const RolesTab = () => {
 
     const permissionLabels = {
       dashboard: "Acceder al dashboard",
-      createTasks: "Crear tareas",
-      editTasks: "Editar tareas",
-      deleteTasks: "Eliminar tareas",
-      accessReports: "Acceder a reportes",
-      generateReports: "Generar reportes",
-      accessDirectory: "Acceder al directorio",
-      addContacts: "Agregar contactos",
-      deleteContacts: "Eliminar contactos",
-      accessCalendar: "Acceder al calendario",
-      createEvents: "Crear eventos de calendario",
-      deleteEvents: "Eliminar eventos de calendario",
-      accessUsersList: "Acceder a la lista de usuarios",
-      manageUserRoles: "Gestión de roles de usuario",
-      manageUsers: "Gestión de usuarios",
+            crear_prospectos: "Crear prospectos",
+            ver_prospectos: "Ver prospectos",
+            editar_prospectos: "Editar prospectos",
+            ver_clientes: "Ver clientes",
+            crear_clientes: "Crear clientes",
+            editar_clientes: "Editar clientes",
+            eliminar_clientes: "Eliminar clientes",
+            enviar_mensajeria_whatsapp: "Enviar whatsapp",
+            enviar_mensajeria_email: "Enviar email",
+            ver_tareas: "Ver tareas",
+            asignar_tareas: "Asignar tareas",
+            marcar_tarea_como_completada: "Tarea como completada",
+            gestionar_pasarela_pagos: "Gestion pasarela",
+            ver_pasarela_pagos: "Ver pagos",
+            configurar_automatizaciones: "Automatizaiones",
+            ver_automatizaciones: "Ver automataciones",
+            ejecutar_automatizacion: "Ejecutar automatizaciones",
+            modificar_automatizaciones: "Editar automatizacion",
+            borrar_automatizaciones: "Borrar automatizacion",
+            ver_reportes: "Gestión de usuarios",
+            generar_reportes: "Gestión de usuarios",
+            ver_historial_de_pagos: "Historial de pagos",
+            gestionar_integracion_whatsapp: "Integracion con whatsapp",
+            gestionar_integracion_email: "Gestión de email",
     };
 
     const categories = {
@@ -312,27 +348,42 @@ const RolesTab = () => {
       tasks: {
         name: "Tareas",
         icon: <FaTasks />,
-        permissions: ["createTasks", "editTasks", "deleteTasks"],
-      },
-      reports: {
-        name: "Reportes",
-        icon: <FaChartBar />,
-        permissions: ["accessReports", "generateReports"],
+        permissions: ["ver_tareas", "asignar_tareas", "marcar_tarea_como_completada"],
       },
       directory: {
         name: "Directorio",
         icon: <FaAddressBook />,
-        permissions: ["accessDirectory", "addContacts", "deleteContacts"],
+        permissions: ["ver_clientes", "crear_clientes", "editar_clientes","eliminar_clientes"],
       },
       calendar: {
-        name: "Calendario",
+        name: "Prospectos",
         icon: <FaCalendarAlt />,
-        permissions: ["accessCalendar", "createEvents", "deleteEvents"],
+        permissions: ["crear_prospectos", "ver_prospectos", "editar_prospectos"],
+      },
+      messages: {
+        name: "Mensajes",
+        icon: <FaCalendarAlt />,
+        permissions: ["enviar_mensajeria_whatsapp", "enviar_mensajeria_email"],
+      },
+      pay: {
+        name: "Pasarelas",
+        icon: <FaCalendarAlt />,
+        permissions: ["gestionar_pasarela_pagos", "enviar_mensajeria_email","ver_pasarela_pagos","ver_historial_de_pagos"],
+      },
+      automatization: {
+        name: "Pasarelas",
+        icon: <FaCalendarAlt />,
+        permissions: ["configurar_automatizaciones", "ver_automatizaciones","ejecutar_automatizacion","modificar_automatizaciones","borrar_automatizaciones"],
+      },
+      report: {
+        name: "Reportes",
+        icon: <FaCalendarAlt />,
+        permissions: ["ver_reportes", "generar_reportes"],
       },
       users: {
         name: "Usuarios",
         icon: <FaUsers />,
-        permissions: ["accessUsersList", "manageUserRoles", "manageUsers"],
+        permissions: ["gestionar_integracion_whatsapp", "gestionar_integracion_email"],
       },
     };
 
@@ -494,102 +545,6 @@ const RolesTab = () => {
           {/* Nueva sección de permisos mejorada */}
           {renderPermissionSection()}
 
-          <div className="mb-6">
-            <h3 className="font-semibold border-b border-light-border-light dark:border-dark-border-light pb-2 mb-3 flex items-center">
-              <FaClipboardList className="mr-2 text-primary-50" />
-              Usuarios invitados
-            </h3>
-
-            {/* Buscador de usuarios */}
-            <div className="relative mb-3">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <FaSearch className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="p-2 pl-10 w-full rounded bg-light-bg-input dark:bg-dark-bg-input text-light-text-primary dark:text-white border border-light-border-medium dark:border-dark-border-medium"
-                placeholder="Buscar por correo o rol..."
-                value={searchUser}
-                onChange={(e) => setSearchUser(e.target.value)}
-              />
-            </div>
-
-            <div className="overflow-x-auto">
-              <div className="max-h-64 overflow-auto rounded-md border border-light-border-medium dark:border-dark-border-medium">
-                <table className="w-full min-w-[500px]">
-                  <thead className="sticky top-0">
-                    <tr className="bg-light-bg-input dark:bg-dark-bg-input text-light-text-secondary dark:text-gray-300">
-                      <th className="p-2 text-left">Correo</th>
-                      <th className="p-2 text-left">Rol</th>
-                      <th className="p-2 text-center">Estado</th>
-                      <th className="p-2 text-center">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-light-border-light dark:divide-dark-border-light">
-                    {filteredUsers.length > 0 ? (
-                      filteredUsers.map((user, index) => (
-                        <tr
-                          key={index}
-                          className="border-t border-light-border-light dark:border-dark-border-light hover:bg-light-bg-input dark:hover:bg-dark-bg-input transition-colors"
-                        >
-                          <td className="p-2">
-                            <div className="flex items-center gap-2">
-                              <FaEnvelope className="text-gray-400" />
-                              {user.email}
-                            </div>
-                          </td>
-                          <td className="p-2">
-                            <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100 rounded-full text-xs">
-                              {user.role}
-                            </span>
-                          </td>
-                          <td className="p-2 text-center">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs ${
-                                user.status === "Activo"
-                                  ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
-                              }`}
-                            >
-                              {user.status}
-                            </span>
-                          </td>
-                          <td className="p-2 text-center">
-                            <button
-                              onClick={() => handleRemoveUser(user.email)}
-                              className="p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900 rounded-full"
-                              title="Eliminar usuario"
-                            >
-                              <FaTrash />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan={4}
-                          className="p-4 text-center text-gray-500"
-                        >
-                          No se encontraron usuarios con la búsqueda actual
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 sm:mt-6">
-            <button
-              onClick={handleSaveChanges}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 px-4 sm:px-6 py-2 rounded text-white text-base sm:text-lg flex items-center justify-center mx-auto transition-colors"
-            >
-              <FaSave className="mr-2" />
-              Guardar y continuar
-            </button>
-          </div>
         </div>
 
         {/* Card derecha */}
@@ -700,61 +655,11 @@ const RolesTab = () => {
             </div>
           </div>
 
-          <div className="mb-4 sm:mb-6">
-            <h3 className="font-semibold border-b border-light-border-light dark:border-dark-border-light pb-2 mb-3 flex items-center">
-              <FaUserPlus className="mr-2 text-primary-50" />
-              Invitar usuarios
-            </h3>
-            <div className="bg-light-bg-primary dark:bg-dark-bg-primary p-2 sm:p-3 rounded-lg border border-light-border-light dark:border-dark-border-light">
-              <div className="flex flex-col gap-3 mt-2">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <FaEnvelope className="text-gray-400" />
-                  </div>
-                  <input
-                    type="email"
-                    className="p-2 pl-10 rounded bg-light-bg-input dark:bg-dark-bg-input text-light-text-primary dark:text-white border border-light-border-medium dark:border-dark-border-medium w-full"
-                    placeholder="Correo del usuario"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="relative flex-1">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <FaUserTag className="text-gray-400" />
-                    </div>
-                    <select
-                      className="p-2 pl-10 rounded bg-light-bg-input dark:bg-dark-bg-input text-light-text-primary dark:text-white border border-light-border-medium dark:border-dark-border-medium w-full appearance-none"
-                      value={selectedRole}
-                      onChange={(e) => setSelectedRole(e.target.value)}
-                    >
-                      {roles.map((role) => (
-                        <option key={role.id} value={role.name}>
-                          {role.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <button
-                    onClick={handleInviteUser}
-                    disabled={!email.trim()}
-                    className={`w-full sm:w-auto bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white whitespace-nowrap flex items-center justify-center transition-colors ${
-                      !email.trim() ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                  >
-                    <FaPaperPlane className="mr-2" />
-                    Enviar invitación
-                  </button>
-                </div>
-              </div>
-              <p className="text-xs sm:text-sm text-light-text-secondary dark:text-gray-400 mt-2">
-                Se enviará una invitación al correo electrónico proporcionado
-                con instrucciones para acceder al sistema.
-              </p>
-            </div>
-          </div>
+         
         </div>
+     
+
+        
       </div>
     </div>
   );

@@ -16,7 +16,8 @@ export default function AuthLayout({
     const token = getAuthToken();
     if (token) {
       const decoded = decodeToken();
-      if (decoded && typeof decoded !== "string" && decoded.status === "Active") {
+
+      if (decoded && typeof decoded !== "string" && decoded.status !== "Active") {
         router.push("/funnels");
       }
     }
