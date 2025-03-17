@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaPlus,
   FaTrash,
@@ -92,7 +92,41 @@ const RolesTab = () => {
 
   const [activeTab, setActiveTab] = useState("general");
 
-  const handleAddRole = () => {
+  const fetchPermissions = async () => {
+      
+    try {
+      // Realiza la llamada al endpoint createRole
+      const response = await fetch("/api/createroles", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      // Verifica si la respuesta es exitosa
+      if (!response.ok) {
+        throw new Error('Error al obtener los roles');
+      }
+
+      // Convierte la respuesta en formato JSON
+      const data = await response.json();
+
+      // Formateamos los datos según el formato deseado
+      const formattedRoles = data.map((role) => ({
+        id: role.id,
+        name: role.name,
+        permissions: role.role_permissions.map(permission => permission.permissions.name),
+      }));
+
+      // Guardamos los roles formateados en el estado
+      setRoles(formattedRoles);
+    } catch (error) {
+      console.error("Error al obtener los roles:", error);
+    }
+  };
+  useEffect(() => {
+    fetchPermissions();
+  },[])
+  
+  const handleAddRole = async () => {
     if (newRole.trim() !== "") {
       // Convertir los permisos activos a un array
       const activePermissions = Object.entries(permissions)
@@ -127,19 +161,60 @@ const RolesTab = () => {
           };
           return permissionLabels[name as keyof typeof permissionLabels];
         });
-
-      setRoles([
-        ...roles,
-        {
-          id: roles.length + 1,
-          name: newRole,
-          permissions: activePermissions.length > 0 ? activePermissions : [],
+     
+       
+      const permissionList = [
+        { id: 1, name: "ver_prospectos" },
+        { id: 2, name: "crear_prospectos" },
+        { id: 3, name: "editar_prospectos" },
+        { id: 4, name: "eliminar_prospectos" },
+        { id: 5, name: "ver_clientes" },
+        { id: 6, name: "crear_clientes" },
+        { id: 7, name: "editar_clientes" },
+        { id: 8, name: "eliminar_clientes" },
+        { id: 9, name: "enviar_mensajeria_whatsapp" },
+        { id: 10, name: "enviar_mensajeria_email" },
+        { id: 11, name: "ver_tareas" },
+        { id: 12, name: "asignar_tareas" },
+        { id: 13, name: "marcar_tarea_como_completada" },
+        { id: 14, name: "gestionar_pasarela_pagos" },
+        { id: 15, name: "ver_pasarela_pagos" },
+        { id: 16, name: "configurar_automatizaciones" },
+        { id: 17, name: "ver_automatizaciones" },
+        { id: 18, name: "ejecutar_automatizacion" },
+        { id: 19, name: "modificar_automatizaciones" },
+        { id: 20, name: "borrar_automatizaciones" },
+        { id: 21, name: "ver_reportes" },
+        { id: 22, name: "generar_reportes" },
+        { id: 23, name: "ver_historial_de_pagos" },
+        { id: 24, name: "gestionar_integracion_whatsapp" },
+        { id: 25, name: "gestionar_integracion_email" }
+      ];
+  
+      // Filtrar los permisos activos y obtener sus IDs
+      const activePermissionIds = permissionList
+        .filter(({ name }) => permissions[name as keyof typeof permissions])
+        .map(({ id }) => id);
+      
+    try {
+      const response = await fetch("/api/createroles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ]);
+        body: JSON.stringify({
+          name: newRole,
+          permissions: activePermissionIds,
+        }),
+      });
 
-      console.log(permissions)
+      if (!response.ok) {
+        throw new Error("Error al crear el rol");
+      }
+      await response.json();
+
+      fetchPermissions();
       setNewRole("");
-
       // Resetear permisos
       setPermissions({
         dashboard: true,
@@ -168,6 +243,20 @@ const RolesTab = () => {
         gestionar_integracion_whatsapp: true,
         gestionar_integracion_email: true,
       });
+    } catch (error) {
+      console.error("Error al enviar los datos:", error);
+    }
+      setRoles([
+        ...roles,
+        {
+          id: roles.length + 1,
+          name: newRole,
+          permissions: activePermissions.length > 0 ? activePermissions : [],
+        },
+      ]);
+      setNewRole("");
+
+      
     }
   };
 
@@ -415,6 +504,8 @@ const RolesTab = () => {
         </div>
       );
     };
+
+    
 
     return (
       <div className="mb-6">

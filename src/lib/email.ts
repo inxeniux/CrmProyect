@@ -53,7 +53,6 @@ export const emailService = {
         `
       });
 
-      console.log(data)
       return { success: true, data };
     } catch (error: unknown) {
       console.log('Error al enviar email de verificación:', error);
