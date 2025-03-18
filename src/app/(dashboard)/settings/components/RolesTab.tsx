@@ -63,37 +63,36 @@ const RolesTab = () => {
 
   // Nuevos permisos disponibles
   const [permissions, setPermissions] = useState({
-        dashboard: false,
-        crear_prospectos: false,
-        ver_prospectos: false,
-        editar_prospectos: false,
-        ver_clientes: false,
-        crear_clientes: false,
-        editar_clientes: false,
-        eliminar_clientes: false,
-        enviar_mensajeria_whatsapp: false,
-        enviar_mensajeria_email: false,
-        ver_tareas: false,
-        asignar_tareas: false,
-        marcar_tarea_como_completada: false,
-        gestionar_pasarela_pagos: false,
-        ver_pasarela_pagos: false,
-        configurar_automatizaciones: false,
-        ver_automatizaciones: false,
-        ejecutar_automatizacion: false,
-        modificar_automatizaciones: false,
-        borrar_automatizaciones: false,
-        ver_reportes: false,
-        generar_reportes: false,
-        ver_historial_de_pagos: false,
-        gestionar_integracion_whatsapp: false,
-        gestionar_integracion_email: false,
+    dashboard: false,
+    crear_prospectos: false,
+    ver_prospectos: false,
+    editar_prospectos: false,
+    ver_clientes: false,
+    crear_clientes: false,
+    editar_clientes: false,
+    eliminar_clientes: false,
+    enviar_mensajeria_whatsapp: false,
+    enviar_mensajeria_email: false,
+    ver_tareas: false,
+    asignar_tareas: false,
+    marcar_tarea_como_completada: false,
+    gestionar_pasarela_pagos: false,
+    ver_pasarela_pagos: false,
+    configurar_automatizaciones: false,
+    ver_automatizaciones: false,
+    ejecutar_automatizacion: false,
+    modificar_automatizaciones: false,
+    borrar_automatizaciones: false,
+    ver_reportes: false,
+    generar_reportes: false,
+    ver_historial_de_pagos: false,
+    gestionar_integracion_whatsapp: false,
+    gestionar_integracion_email: false,
   });
 
   const [activeTab, setActiveTab] = useState("general");
 
   const fetchPermissions = async () => {
-      
     try {
       // Realiza la llamada al endpoint createRole
       const response = await fetch("/api/createroles", {
@@ -103,18 +102,44 @@ const RolesTab = () => {
       });
       // Verifica si la respuesta es exitosa
       if (!response.ok) {
-        throw new Error('Error al obtener los roles');
+        throw new Error("Error al obtener los roles");
       }
 
       // Convierte la respuesta en formato JSON
       const data = await response.json();
 
       // Formateamos los datos según el formato deseado
-      const formattedRoles = data.map((role) => ({
-        id: role.id,
-        name: role.name,
-        permissions: role.role_permissions.map(permission => permission.permissions.name),
-      }));
+      // Define interfaces for the API response structure
+      interface Permission {
+        name: string;
+      }
+
+      interface RolePermission {
+        permissions: Permission;
+      }
+
+      interface RoleData {
+        id: number;
+        name: string;
+        role_permissions: RolePermission[];
+      }
+
+      interface FormattedRole {
+        id: number;
+        name: string;
+        permissions: string[];
+      }
+
+      // Format the data with proper typing
+      const formattedRoles: FormattedRole[] = (data as RoleData[]).map(
+        (role: RoleData) => ({
+          id: role.id,
+          name: role.name,
+          permissions: role.role_permissions.map(
+            (permission) => permission.permissions.name
+          ),
+        })
+      );
 
       // Guardamos los roles formateados en el estado
       setRoles(formattedRoles);
@@ -124,8 +149,8 @@ const RolesTab = () => {
   };
   useEffect(() => {
     fetchPermissions();
-  },[])
-  
+  }, []);
+
   const handleAddRole = async () => {
     if (newRole.trim() !== "") {
       // Convertir los permisos activos a un array
@@ -161,8 +186,7 @@ const RolesTab = () => {
           };
           return permissionLabels[name as keyof typeof permissionLabels];
         });
-     
-       
+
       const permissionList = [
         { id: 1, name: "ver_prospectos" },
         { id: 2, name: "crear_prospectos" },
@@ -188,64 +212,64 @@ const RolesTab = () => {
         { id: 22, name: "generar_reportes" },
         { id: 23, name: "ver_historial_de_pagos" },
         { id: 24, name: "gestionar_integracion_whatsapp" },
-        { id: 25, name: "gestionar_integracion_email" }
+        { id: 25, name: "gestionar_integracion_email" },
       ];
-  
+
       // Filtrar los permisos activos y obtener sus IDs
       const activePermissionIds = permissionList
         .filter(({ name }) => permissions[name as keyof typeof permissions])
         .map(({ id }) => id);
-      
-    try {
-      const response = await fetch("/api/createroles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: newRole,
-          permissions: activePermissionIds,
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error("Error al crear el rol");
+      try {
+        const response = await fetch("/api/createroles", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: newRole,
+            permissions: activePermissionIds,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al crear el rol");
+        }
+        await response.json();
+
+        fetchPermissions();
+        setNewRole("");
+        // Resetear permisos
+        setPermissions({
+          dashboard: true,
+          crear_prospectos: true,
+          ver_prospectos: true,
+          editar_prospectos: true,
+          ver_clientes: true,
+          crear_clientes: true,
+          editar_clientes: true,
+          eliminar_clientes: true,
+          enviar_mensajeria_whatsapp: true,
+          enviar_mensajeria_email: true,
+          ver_tareas: true,
+          asignar_tareas: true,
+          marcar_tarea_como_completada: true,
+          gestionar_pasarela_pagos: true,
+          ver_pasarela_pagos: true,
+          configurar_automatizaciones: true,
+          ver_automatizaciones: true,
+          ejecutar_automatizacion: true,
+          modificar_automatizaciones: true,
+          borrar_automatizaciones: true,
+          ver_reportes: true,
+          generar_reportes: true,
+          ver_historial_de_pagos: true,
+          gestionar_integracion_whatsapp: true,
+          gestionar_integracion_email: true,
+        });
+      } catch (error) {
+        console.error("Error al enviar los datos:", error);
       }
-      await response.json();
-
-      fetchPermissions();
-      setNewRole("");
-      // Resetear permisos
-      setPermissions({
-        dashboard: true,
-        crear_prospectos: true,
-        ver_prospectos: true,
-        editar_prospectos: true,
-        ver_clientes: true,
-        crear_clientes: true,
-        editar_clientes: true,
-        eliminar_clientes: true,
-        enviar_mensajeria_whatsapp: true,
-        enviar_mensajeria_email: true,
-        ver_tareas: true,
-        asignar_tareas: true,
-        marcar_tarea_como_completada: true,
-        gestionar_pasarela_pagos: true,
-        ver_pasarela_pagos: true,
-        configurar_automatizaciones: true,
-        ver_automatizaciones: true,
-        ejecutar_automatizacion: true,
-        modificar_automatizaciones: true,
-        borrar_automatizaciones: true,
-        ver_reportes: true,
-        generar_reportes: true,
-        ver_historial_de_pagos: true,
-        gestionar_integracion_whatsapp: true,
-        gestionar_integracion_email: true,
-      });
-    } catch (error) {
-      console.error("Error al enviar los datos:", error);
-    }
       setRoles([
         ...roles,
         {
@@ -255,8 +279,6 @@ const RolesTab = () => {
         },
       ]);
       setNewRole("");
-
-      
     }
   };
 
@@ -402,30 +424,30 @@ const RolesTab = () => {
 
     const permissionLabels = {
       dashboard: "Acceder al dashboard",
-            crear_prospectos: "Crear prospectos",
-            ver_prospectos: "Ver prospectos",
-            editar_prospectos: "Editar prospectos",
-            ver_clientes: "Ver clientes",
-            crear_clientes: "Crear clientes",
-            editar_clientes: "Editar clientes",
-            eliminar_clientes: "Eliminar clientes",
-            enviar_mensajeria_whatsapp: "Enviar whatsapp",
-            enviar_mensajeria_email: "Enviar email",
-            ver_tareas: "Ver tareas",
-            asignar_tareas: "Asignar tareas",
-            marcar_tarea_como_completada: "Tarea como completada",
-            gestionar_pasarela_pagos: "Gestion pasarela",
-            ver_pasarela_pagos: "Ver pagos",
-            configurar_automatizaciones: "Automatizaiones",
-            ver_automatizaciones: "Ver automataciones",
-            ejecutar_automatizacion: "Ejecutar automatizaciones",
-            modificar_automatizaciones: "Editar automatizacion",
-            borrar_automatizaciones: "Borrar automatizacion",
-            ver_reportes: "Gestión de usuarios",
-            generar_reportes: "Gestión de usuarios",
-            ver_historial_de_pagos: "Historial de pagos",
-            gestionar_integracion_whatsapp: "Integracion con whatsapp",
-            gestionar_integracion_email: "Gestión de email",
+      crear_prospectos: "Crear prospectos",
+      ver_prospectos: "Ver prospectos",
+      editar_prospectos: "Editar prospectos",
+      ver_clientes: "Ver clientes",
+      crear_clientes: "Crear clientes",
+      editar_clientes: "Editar clientes",
+      eliminar_clientes: "Eliminar clientes",
+      enviar_mensajeria_whatsapp: "Enviar whatsapp",
+      enviar_mensajeria_email: "Enviar email",
+      ver_tareas: "Ver tareas",
+      asignar_tareas: "Asignar tareas",
+      marcar_tarea_como_completada: "Tarea como completada",
+      gestionar_pasarela_pagos: "Gestion pasarela",
+      ver_pasarela_pagos: "Ver pagos",
+      configurar_automatizaciones: "Automatizaiones",
+      ver_automatizaciones: "Ver automataciones",
+      ejecutar_automatizacion: "Ejecutar automatizaciones",
+      modificar_automatizaciones: "Editar automatizacion",
+      borrar_automatizaciones: "Borrar automatizacion",
+      ver_reportes: "Gestión de usuarios",
+      generar_reportes: "Gestión de usuarios",
+      ver_historial_de_pagos: "Historial de pagos",
+      gestionar_integracion_whatsapp: "Integracion con whatsapp",
+      gestionar_integracion_email: "Gestión de email",
     };
 
     const categories = {
@@ -437,17 +459,30 @@ const RolesTab = () => {
       tasks: {
         name: "Tareas",
         icon: <FaTasks />,
-        permissions: ["ver_tareas", "asignar_tareas", "marcar_tarea_como_completada"],
+        permissions: [
+          "ver_tareas",
+          "asignar_tareas",
+          "marcar_tarea_como_completada",
+        ],
       },
       directory: {
         name: "Directorio",
         icon: <FaAddressBook />,
-        permissions: ["ver_clientes", "crear_clientes", "editar_clientes","eliminar_clientes"],
+        permissions: [
+          "ver_clientes",
+          "crear_clientes",
+          "editar_clientes",
+          "eliminar_clientes",
+        ],
       },
       calendar: {
         name: "Prospectos",
         icon: <FaCalendarAlt />,
-        permissions: ["crear_prospectos", "ver_prospectos", "editar_prospectos"],
+        permissions: [
+          "crear_prospectos",
+          "ver_prospectos",
+          "editar_prospectos",
+        ],
       },
       messages: {
         name: "Mensajes",
@@ -457,12 +492,23 @@ const RolesTab = () => {
       pay: {
         name: "Pasarelas",
         icon: <FaCalendarAlt />,
-        permissions: ["gestionar_pasarela_pagos", "enviar_mensajeria_email","ver_pasarela_pagos","ver_historial_de_pagos"],
+        permissions: [
+          "gestionar_pasarela_pagos",
+          "enviar_mensajeria_email",
+          "ver_pasarela_pagos",
+          "ver_historial_de_pagos",
+        ],
       },
       automatization: {
         name: "Pasarelas",
         icon: <FaCalendarAlt />,
-        permissions: ["configurar_automatizaciones", "ver_automatizaciones","ejecutar_automatizacion","modificar_automatizaciones","borrar_automatizaciones"],
+        permissions: [
+          "configurar_automatizaciones",
+          "ver_automatizaciones",
+          "ejecutar_automatizacion",
+          "modificar_automatizaciones",
+          "borrar_automatizaciones",
+        ],
       },
       report: {
         name: "Reportes",
@@ -472,7 +518,10 @@ const RolesTab = () => {
       users: {
         name: "Usuarios",
         icon: <FaUsers />,
-        permissions: ["gestionar_integracion_whatsapp", "gestionar_integracion_email"],
+        permissions: [
+          "gestionar_integracion_whatsapp",
+          "gestionar_integracion_email",
+        ],
       },
     };
 
@@ -504,8 +553,6 @@ const RolesTab = () => {
         </div>
       );
     };
-
-    
 
     return (
       <div className="mb-6">
@@ -635,7 +682,6 @@ const RolesTab = () => {
 
           {/* Nueva sección de permisos mejorada */}
           {renderPermissionSection()}
-
         </div>
 
         {/* Card derecha */}
@@ -745,12 +791,7 @@ const RolesTab = () => {
               </div>
             </div>
           </div>
-
-         
         </div>
-     
-
-        
       </div>
     </div>
   );
