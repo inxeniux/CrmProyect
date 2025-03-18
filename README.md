@@ -1,2 +1,2 @@
 # CrmProyect
-# npm run dev
+# npm run de
