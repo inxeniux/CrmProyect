@@ -180,6 +180,14 @@ model roles {
   role_permissions role_permissions[]
 }
 
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum Tasks_status {
   Pending
   In_Progress @map("In Progress")
