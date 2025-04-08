@@ -16,7 +16,6 @@ import {
 import { showToast } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 interface InputState {
   email: string;
@@ -32,12 +31,6 @@ interface Errors {
   email?: string;
   password?: string;
 }
-
-const fadeInAnimation = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  transition: { duration: 0.3 },
-};
 
 export default function LoginForm() {
   const { theme, toggleTheme } = useTheme();
@@ -237,9 +230,7 @@ export default function LoginForm() {
       </label>
 
       {field === "password" && (
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+        <button
           type="button"
           onClick={togglePasswordVisibility}
           className="absolute right-3 top-3.5 text-gray-500 hover:text-primary-50
@@ -254,29 +245,20 @@ export default function LoginForm() {
           ) : (
             <BsEye className="w-5 h-5" />
           )}
-        </motion.button>
+        </button>
       )}
 
       {errors[field] && (
-        <motion.p
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-sm text-red-600 mt-1 flex items-center"
-        >
+        <p className="text-sm text-red-600 mt-1 flex items-center">
           <span className="mr-1">⚠️</span> {errors[field]}
-        </motion.p>
+        </p>
       )}
     </div>
   );
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row relative">
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-        className="lg:w-1/2 h-[200px] lg:h-screen relative order-1 lg:order-2 dark:bg-dark-bg-primary bg-light-bg-primary p-4 lg:p-6"
-      >
+      <div className="lg:w-1/2 h-[200px] lg:h-screen relative order-1 lg:order-2 dark:bg-dark-bg-primary bg-light-bg-primary p-4 lg:p-6">
         <div className="w-full h-full relative rounded-2xl overflow-hidden shadow-2xl">
           <Image
             src="/images/hero.png"
@@ -286,20 +268,11 @@ export default function LoginForm() {
             priority
           />
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        {...fadeInAnimation}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="lg:w-1/2 flex items-end lg:items-center justify-center p-6 dark:bg-dark-bg-primary bg-light-bg-primary order-2 lg:order-1 flex-1"
-      >
+      <div className="lg:w-1/2 flex items-end lg:items-center justify-center p-6 dark:bg-dark-bg-primary bg-light-bg-primary order-2 lg:order-1 flex-1">
         <div className="w-full max-w-md">
-          <motion.div
-            initial={{ y: -20 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex justify-between items-center mb-8 relative"
-          >
+          <div className="flex justify-between items-center mb-8 relative">
             <Image
               src={
                 theme === "light" ? "/images/niux.png" : "/images/niuxdark.png"
@@ -310,38 +283,23 @@ export default function LoginForm() {
               className="hover:opacity-80 transition-opacity"
             />
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={toggleTheme}
               className="p-2 rounded-full bg-gray-50 dark:bg-primary-50 shadow-md hover:shadow-lg transition-shadow"
               aria-label="Cambiar tema"
             >
               <MdOutlineLightMode className="text-md dark:text-white text-gray-800" />
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
 
-          <motion.h2
-            {...fadeInAnimation}
-            transition={{ delay: 0.3, duration: 0.3 }}
-            className="text-3xl font-bold mb-2 dark:text-white text-gray-900 tracking-tight"
-          >
+          <h2 className="text-3xl font-bold mb-2 dark:text-white text-gray-900 tracking-tight">
             Bienvenido de nuevo
-          </motion.h2>
-          <motion.p
-            {...fadeInAnimation}
-            transition={{ delay: 0.4, duration: 0.3 }}
-            className="text-sm mb-8 dark:text-dark-text-secondary text-light-text-secondary"
-          >
+          </h2>
+          <p className="text-sm mb-8 dark:text-dark-text-secondary text-light-text-secondary">
             Inicie sesión para acceder a su cuenta de niux
-          </motion.p>
+          </p>
 
-          <motion.form
-            {...fadeInAnimation}
-            transition={{ delay: 0.5, duration: 0.3 }}
-            onSubmit={handleLogin}
-            className="space-y-5"
-          >
+          <form onSubmit={handleLogin} className="space-y-5">
             <div className="relative group">
               <input
                 type="email"
@@ -380,13 +338,9 @@ export default function LoginForm() {
               </label>
 
               {errors.email && (
-                <motion.p
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-red-600 mt-1 flex items-center"
-                >
+                <p className="text-sm text-red-600 mt-1 flex items-center">
                   <span className="mr-1">⚠️</span> {errors.email}
-                </motion.p>
+                </p>
               )}
             </div>
 
@@ -427,9 +381,7 @@ export default function LoginForm() {
                 Contraseña
               </label>
 
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+              <button
                 type="button"
                 onClick={togglePasswordVisibility}
                 className="absolute right-3 top-3.5 text-gray-500 hover:text-primary-50
@@ -446,16 +398,12 @@ export default function LoginForm() {
                 ) : (
                   <BsEye className="w-5 h-5" />
                 )}
-              </motion.button>
+              </button>
 
               {errors.password && (
-                <motion.p
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-red-600 mt-1 flex items-center"
-                >
+                <p className="text-sm text-red-600 mt-1 flex items-center">
                   <span className="mr-1">⚠️</span> {errors.password}
-                </motion.p>
+                </p>
               )}
             </div>
 
@@ -499,9 +447,7 @@ export default function LoginForm() {
               </Link>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               type="submit"
               className={`w-full bg-primary-50 text-white py-3.5 rounded-lg font-medium 
                   hover:bg-primary-600 active:bg-primary-700 shadow-md hover:shadow-lg
@@ -517,14 +463,10 @@ export default function LoginForm() {
               ) : (
                 "Iniciar sesión"
               )}
-            </motion.button>
-          </motion.form>
+            </button>
+          </form>
 
-          <motion.p
-            {...fadeInAnimation}
-            transition={{ delay: 0.6, duration: 0.3 }}
-            className="mt-8 text-center dark:text-dark-text-tertiary text-light-text-tertiary"
-          >
+          <p className="mt-8 text-center dark:text-dark-text-tertiary text-light-text-tertiary">
             ¿No tienes cuenta?{" "}
             <Link
               href="/register"
@@ -532,9 +474,9 @@ export default function LoginForm() {
             >
               Regístrate ahora
             </Link>
-          </motion.p>
+          </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -5,8 +5,8 @@ const nextConfig = {
       allowedOrigins: ["*"], // Permitir todas las solicitudes
     },
   },
-  serverComponentsExternalPackages: [
-    // Cambio en la opción de Next.js 15+
+  transpilePackages: [
+    // Paquetes que necesitan ser transpilados
     "aws-sdk",
     "bcrypt",
     "bcryptjs",
