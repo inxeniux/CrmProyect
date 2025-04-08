@@ -2,9 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import BussinessData from "./BussinessData";
-import UserCreationForm from "./UserCreationForm";
-import UsersTable from "./UsersTable";
+import BussinessData from "./business/BussinessData";
+import UserCreationForm from "./business/UserCreationForm";
+import UsersTable from "./business/UsersTable";
 
 export default function BusinessTab() {
   const [refreshCounter, setRefreshCounter] = useState(0);

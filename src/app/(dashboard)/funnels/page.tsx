@@ -1,10 +1,10 @@
 // app/funnels/FunnelsComponent.tsx
-'use client';
+"use client";
 
 import { useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import useSWR from 'swr';
+import useSWR from "swr";
 import NavbarSideComponent from "@/components/layouts/NavbarSideComponent";
 import SideModal from "@/components/layouts/SideModal";
 import { FunnelForm } from "@/components/form/FunnelForm";
@@ -31,14 +31,14 @@ interface FunnelFormData {
 const fetcher = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error("Failed to fetch data");
   }
   return res.json();
 };
 
 export default function FunnelsPage() {
   const router = useRouter();
-  
+
   const [openModal, setOpenModal] = useState(false);
   const [formData, setFormData] = useState<FunnelFormData>({
     name: "",
@@ -48,37 +48,37 @@ export default function FunnelsPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  const { 
-    data: funnels, 
-    error, 
+  const {
+    data: funnels,
+    error,
     isLoading,
-    mutate 
-  } = useSWR<Funnel[]>('/api/funnels', fetcher);
+    mutate,
+  } = useSWR<Funnel[]>("/api/funnels", fetcher);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      const response = await fetch('/api/funnels', {
-        method: 'POST',
+      const response = await fetch("/api/funnels", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create funnel');
+        throw new Error("Failed to create funnel");
       }
 
       await mutate();
-      alert('Embudo creado exitosamente!');
+      alert("Embudo creado exitosamente!");
       setOpenModal(false);
       setFormData({ name: "", description: "", inputs: [], patch: false });
     } catch (err) {
-      console.error('Error al crear el embudo:', err);
-      alert('Error al crear el embudo');
+      console.error("Error al crear el embudo:", err);
+      alert("Error al crear el embudo");
     } finally {
       setLoading(false);
     }
@@ -86,21 +86,21 @@ export default function FunnelsPage() {
 
   const handleDelete = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     try {
       const response = await fetch(`/api/funnels/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to delete funnel');
+        throw new Error("Failed to delete funnel");
       }
 
       await mutate();
-      alert('Embudo eliminado exitosamente!');
+      alert("Embudo eliminado exitosamente!");
     } catch (err) {
-      console.error('Error al eliminar el embudo:', err);
-      alert('Error al eliminar el embudo');
+      console.error("Error al eliminar el embudo:", err);
+      alert("Error al eliminar el embudo");
     }
   };
 
@@ -108,9 +108,9 @@ export default function FunnelsPage() {
     try {
       const response = await fetch(`/api/search/${name}?table=funnel`);
       if (!response.ok) {
-        throw new Error('Search failed');
+        throw new Error("Search failed");
       }
-      
+
       const searchResults = await response.json();
       await mutate(searchResults, false);
     } catch (err) {
@@ -141,25 +141,22 @@ export default function FunnelsPage() {
   }
 
   return (
-    <NavbarSideComponent 
-      setOpenModal={setOpenModal} 
-      nameButton="agregar funnel" 
+    <NavbarSideComponent
+      setOpenModal={setOpenModal}
+      nameButton="agregar funnel"
       name="Embudos"
     >
-      <SideModal 
-        patch={formData.patch} 
-        isOpen={openModal} 
-        loading={loading} 
-        onClose={() => setOpenModal(false)} 
-        title="Crear Funnel" 
+      <SideModal
+        patch={formData.patch}
+        isOpen={openModal}
+        loading={loading}
+        onClose={() => setOpenModal(false)}
+        title="Crear Funnel"
         onSubmit={handleSubmit}
-      > 
-        <FunnelForm 
-          formData={formData} 
-          setFormData={setFormData}
-        />
+      >
+        <FunnelForm formData={formData} setFormData={setFormData} />
       </SideModal>
-      
+
       <div className="relative mx-5 mt-5 overflow-x-auto">
         <div className="pb-4">
           <label htmlFor="table-search" className="sr-only">

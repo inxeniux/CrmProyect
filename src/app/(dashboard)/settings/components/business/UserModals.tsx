@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiTrash2, FiEdit } from "react-icons/fi";

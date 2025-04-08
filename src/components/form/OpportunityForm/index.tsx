@@ -1,8 +1,8 @@
 // components/form/OpportunityForm/index.tsx
-'use client';
+"use client";
 
-import AutoCompleteClient from '@/components/ui/inputs/AutocompleteClient';
-import { useEffect, useState } from 'react';
+import AutoCompleteClient from "@/components/ui/inputs/AutocompleteClient";
+import { useEffect, useState } from "react";
 
 interface FormData {
   client_id: number;
@@ -25,18 +25,24 @@ interface Client {
 }
 
 interface FormProps {
-  formData: FormData; 
+  formData: FormData;
   setFormData: (data: FormData) => void;
   id: string;
 }
 
-export default function OpportunityForm({ formData, setFormData, id }: FormProps) {
+export default function OpportunityForm({
+  formData,
+  setFormData,
+  id,
+}: FormProps) {
   const [data, setData] = useState<Select[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  
+  const [error, setError] = useState("");
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
 
@@ -52,7 +58,7 @@ export default function OpportunityForm({ formData, setFormData, id }: FormProps
 
     setFormData({
       ...formData,
-      deal_closing_date: value ? new Date(value).toISOString() : ""
+      deal_closing_date: value ? new Date(value).toISOString() : "",
     });
   };
 
@@ -64,11 +70,11 @@ export default function OpportunityForm({ formData, setFormData, id }: FormProps
         const fetchedData = await response.json();
         setData(fetchedData);
       } else {
-        throw new Error('Error al cargar los datos');
+        throw new Error("Error al cargar los datos");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error ocurrido');
-      console.error('Error:', err);
+      setError(err instanceof Error ? err.message : "Error ocurrido");
+      console.error("Error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +83,7 @@ export default function OpportunityForm({ formData, setFormData, id }: FormProps
   const handleClientSelect = (client: Client) => {
     setFormData({
       ...formData,
-      client_id: client.client_id
+      client_id: client.client_id,
     });
   };
 
@@ -90,16 +96,22 @@ export default function OpportunityForm({ formData, setFormData, id }: FormProps
   if (!data) return null;
 
   return (
-    <form className="rounded-md">
+    <form className="rounded-md dark:bg-dark-bg-primary">
       <div className="mb-4">
-        <label htmlFor="client_id" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="client_id"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary"
+        >
           Cliente
         </label>
         <AutoCompleteClient onSelect={handleClientSelect} />
       </div>
 
       <div className="mb-4">
-        <label htmlFor="deal_value" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="deal_value"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary"
+        >
           Valor del prospecto
         </label>
         <input
@@ -110,12 +122,15 @@ export default function OpportunityForm({ formData, setFormData, id }: FormProps
           onChange={handleChange}
           placeholder="Ingresa el valor"
           required
-          className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+          className="w-full mt-2 p-2 border border-light-border-medium dark:border-dark-border-medium rounded-md bg-light-bg-input dark:bg-dark-bg-input text-light-text-primary dark:text-dark-text-primary focus:outline-none focus:ring-1 focus:ring-primary-50 dark:focus:ring-primary-50"
         />
       </div>
 
       <div className="mb-4">
-        <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="stage"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary"
+        >
           Estatus
         </label>
         <select
@@ -124,21 +139,23 @@ export default function OpportunityForm({ formData, setFormData, id }: FormProps
           value={formData.stage}
           onChange={handleChange}
           required
-          className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+          className="w-full mt-2 p-2 border border-light-border-medium dark:border-dark-border-medium rounded-md bg-light-bg-input dark:bg-dark-bg-input text-light-text-primary dark:text-dark-text-primary focus:outline-none focus:ring-1 focus:ring-primary-50 dark:focus:ring-primary-50"
         >
-          <option value={""}>
-            Selecciona una opcion
-          </option>
-          {data.length > 0 && data.map((item) => (
-            <option key={item.stage_id} value={item.stage_id}>
-              {item.name}
-            </option>
-          ))}
+          <option value={""}>Selecciona una opcion</option>
+          {data.length > 0 &&
+            data.map((item) => (
+              <option key={item.stage_id} value={item.stage_id}>
+                {item.name}
+              </option>
+            ))}
         </select>
       </div>
 
       <div className="mb-4">
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="notes"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary"
+        >
           Nota
         </label>
         <textarea
@@ -148,21 +165,24 @@ export default function OpportunityForm({ formData, setFormData, id }: FormProps
           onChange={handleChange}
           placeholder="Enter opportunity details"
           rows={4}
-          className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+          className="w-full mt-2 p-2 border border-light-border-medium dark:border-dark-border-medium rounded-md bg-light-bg-input dark:bg-dark-bg-input text-light-text-primary dark:text-dark-text-primary focus:outline-none focus:ring-1 focus:ring-primary-50 dark:focus:ring-primary-50"
         />
       </div>
 
       <div className="mb-4">
-        <label htmlFor="deal_closing_date" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="deal_closing_date"
+          className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary"
+        >
           Dia de cierre
         </label>
         <input
           type="date"
           id="deal_closing_date"
           name="deal_closing_date"
-          value={formData.deal_closing_date.substring(0, 10)} // Extraer solo la parte de la fecha YYYY-MM-DD
+          value={formData.deal_closing_date.substring(0, 10)}
           onChange={handleDateChange}
-          className="w-full p-2 mt-2 border border-gray-300 rounded-md"
+          className="w-full p-2 mt-2 border border-light-border-medium dark:border-dark-border-medium rounded-md bg-light-bg-input dark:bg-dark-bg-input text-light-text-primary dark:text-dark-text-primary focus:outline-none focus:ring-1 focus:ring-primary-50 dark:focus:ring-primary-50"
         />
       </div>
     </form>

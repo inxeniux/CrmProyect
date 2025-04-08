@@ -1,12 +1,12 @@
 "use client";
 
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiLoader } from "react-icons/fi";
 
-// Lazy load components
-const ProfileForm = lazy(() => import("./ProfileForm"));
-const PasswordForm = lazy(() => import("./PasswordForm"));
+// Importar componentes directamente
+import ProfileForm from "./profile/ProfileForm";
+import PasswordForm from "./profile/PasswordForm";
 
 // Loading fallback component
 const LoadingFallback = () => (

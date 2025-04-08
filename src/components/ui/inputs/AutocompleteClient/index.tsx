@@ -8,11 +8,15 @@ interface Client {
   email?: string; // Opcional para que coincida con los datos de la API
 }
 
-export default function AutoCompleteClient({ onSelect }: { onSelect: (client: Client) => void }) {
+export default function AutoCompleteClient({
+  onSelect,
+}: {
+  onSelect: (client: Client) => void;
+}) {
   const [query, setQuery] = useState("");
   const [filteredItems, setFilteredItems] = useState<Client[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
@@ -64,20 +68,31 @@ export default function AutoCompleteClient({ onSelect }: { onSelect: (client: Cl
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Buscar un cliente..."
-        className="w-full p-2 mt-2 border-gray-200 bg-white rounded"
+        className="w-full p-2 mt-2 border rounded
+                  dark:bg-dark-bg-input dark:text-dark-text-primary dark:border-dark-border-medium
+                  bg-light-bg-input text-light-text-primary border-light-border-medium
+                  focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-opacity-50"
       />
       {filteredItems.length > 0 && (
-        <ul className="absolute left-0 w-full bg-white border rounded mt-1 shadow-lg z-10">
+        <ul
+          className="absolute left-0 w-full border rounded mt-1 shadow-lg z-10
+                       dark:bg-dark-bg-secondary dark:border-dark-border-light
+                       bg-light-bg-primary border-light-border-light"
+        >
           {filteredItems.map((item, index) => (
             <li
               key={item.client_id}
-              className={`p-2 cursor-pointer ${
-                index === selectedIndex ? "bg-blue-500 text-white" : "bg-white"
+              className={`p-2 cursor-pointer hover:bg-light-bg-secondary dark:hover:bg-dark-bg-primary ${
+                index === selectedIndex
+                  ? "bg-brand-primary text-white"
+                  : "dark:bg-dark-bg-secondary dark:text-dark-text-primary bg-light-bg-primary text-light-text-primary"
               }`}
               onClick={() => handleSelect(item)}
             >
               <h1>{item.contact_name}</h1>
-              <p className="text-gray-600 text-sm">{item.email}</p>
+              <p className="text-sm dark:text-dark-text-tertiary text-light-text-tertiary">
+                {item.email}
+              </p>
             </li>
           ))}
         </ul>
