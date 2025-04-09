@@ -264,7 +264,7 @@ export default function LoginForm() {
             src="/images/hero.png"
             alt="Login illustration"
             fill
-            className="object-cover transform hover:scale-105 transition-all duration-700"
+            className="object-cover"
             priority
           />
         </div>
