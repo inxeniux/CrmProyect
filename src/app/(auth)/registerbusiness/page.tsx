@@ -107,20 +107,18 @@ export default function BusinessRegisterPage() {
   };
 
   const handleVerification = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    console.log('Entro a la funcion handleVerification')
     e.preventDefault();
  
     if (!acceptTerms) {
       showToast.error('Debe aceptar los términos y condiciones');
       return;
-    }else if(validarFormulario()){
+    }else if(!validarFormulario()){
       return
     }
 
     const loadingToast = showToast.loading('Procesando...');
-    const token = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('auth_token='))
-    ?.split('=')[1];
+    const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
 
     try {
       const response = await fetch('/api/auth/registration-business', {
@@ -135,6 +133,8 @@ export default function BusinessRegisterPage() {
         }),
         credentials: 'include', // Para enviar las cookies
       });
+
+      console.log('BusinessRegisterPage response', response)
 
       if (!response.ok) {
         throw new Error('Error en la respuesta del servidor');

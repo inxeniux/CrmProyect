@@ -41,6 +41,8 @@ export default function RegisterPage() {
         body: JSON.stringify({ email: data.email }),
       });
 
+      console.log('handleInitialRegistration response', response)
+
       if (response.ok) {
         showToast.updateLoading(loadingToast, '¡Código enviado exitosamente!', 'success');
         setRegistrationData(data);
@@ -58,7 +60,7 @@ export default function RegisterPage() {
         error instanceof Error ? error.message : 'Error al iniciar registro', 
         'error'
       );
-      console.log( error);
+      console.error( error);
     }
   };
 
@@ -76,6 +78,8 @@ export default function RegisterPage() {
           code
         }),
       });
+
+      console.log('handleVerification response', response)
 
       if (!response.ok) {
         throw new Error('Error en la verificación');
