@@ -72,9 +72,9 @@ function useBusinessForm() {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value || "" }));
 
-      const validationError = validateField(name, value);
+      const validationError = validateField(name, value || "");
       setErrors((prev) => ({ ...prev, [name]: validationError }));
     },
     [validateField]
@@ -281,7 +281,7 @@ const FormInput = memo(
     icon: Icon,
     name,
     placeholder,
-    value,
+    value = "", // Valor por defecto para asegurar que nunca sea undefined
     onChange,
     error,
     type = "text",
@@ -330,7 +330,7 @@ const FormInput = memo(
             type={type}
             name={name}
             placeholder={`Ingresa ${placeholder.toLowerCase()}`}
-            value={value}
+            value={value || ""} // Asegurar que nunca sea undefined
             onChange={onChange}
             aria-invalid={error ? "true" : "false"}
             aria-describedby={error ? `${name}-error` : undefined}
@@ -385,6 +385,9 @@ const LogoPreview = ({
   onRemove: () => void;
 }) => {
   const [isZoomed, setIsZoomed] = useState(false);
+
+  // Verificar que logo no sea undefined
+  if (!logo) return null;
 
   return (
     <div className="flex flex-col items-center p-4 border rounded-lg bg-light-bg-input dark:bg-dark-bg-input border-primary-50/20">
