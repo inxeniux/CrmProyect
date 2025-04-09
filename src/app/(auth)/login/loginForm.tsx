@@ -6,13 +6,7 @@ import { MdOutlineLightMode } from "react-icons/md";
 import { FiEyeOff } from "react-icons/fi";
 import { BsEye } from "react-icons/bs";
 import { FaSpinner } from "react-icons/fa";
-import {
-  useState,
-  useEffect,
-  useCallback,
-  FormEvent,
-  ChangeEvent,
-} from "react";
+import { useState, useEffect } from "react";
 import { showToast } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -57,31 +51,28 @@ export default function LoginForm() {
     }
   }, []);
 
-  const handleFocus = useCallback((field: keyof FocusState): void => {
+  const handleFocus = (field: keyof FocusState): void => {
     setIsFocused((prev) => ({ ...prev, [field]: true }));
-  }, []);
+  };
 
-  const handleBlur = useCallback((field: keyof FocusState): void => {
+  const handleBlur = (field: keyof FocusState): void => {
     setIsFocused((prev) => ({ ...prev, [field]: false }));
-  }, []);
+  };
 
-  const handleChange = useCallback(
-    (field: keyof InputState, value: string): void => {
-      setInputValues((prev) => ({ ...prev, [field]: value }));
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    },
-    []
-  );
+  const handleChange = (field: keyof InputState, value: string): void => {
+    setInputValues((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
 
-  const togglePasswordVisibility = useCallback(() => {
+  const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
-  }, []);
+  };
 
-  const toggleRememberMe = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const toggleRememberMe = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRememberMe(e.target.checked);
-  }, []);
+  };
 
-  const validateForm = useCallback((): boolean => {
+  const validateForm = (): boolean => {
     const newErrors: Errors = {};
     const { email, password } = inputValues;
 
@@ -99,9 +90,9 @@ export default function LoginForm() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [inputValues]);
+  };
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
